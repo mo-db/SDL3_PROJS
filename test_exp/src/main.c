@@ -9,7 +9,7 @@ static struct {
 	Uint32 accum;
 	Uint64 now;
 	Uint64 last;
-	double delta;
+	Uint64 delta_ns;
 } state;
 
 static SDL_Window *window;
@@ -44,9 +44,11 @@ int main()
 	while (keep_going) {
 		state.last = state.now;
 		state.now = SDL_GetPerformanceCounter();
-		state.delta = (double)(state.now - state.last) / SDL_GetPerformanceFrequency();
+		state.delta_ns = (1000000000*(state.now - state.last)) / SDL_GetPerformanceFrequency();
+		printf("delta_ns: %llu\n", state.delta_ns);
 		
 		// event loop
+		SDL_Delay(100);
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_EVENT_QUIT) {
@@ -54,16 +56,6 @@ int main()
 			}
 			if (event.type == SDL_EVENT_KEY_DOWN) {
     			if (event.key.key == SDLK_A) {
-					printf("couterfreq: %llu\n", SDL_GetPerformanceFrequency());
-					state.last = SDL_GetPerformanceCounter();
-					printf("counter start: %llu\n", state.last);
-					SDL_Delay(100);
-					state.now = SDL_GetPerformanceCounter();
-					printf("counter stop : %llu\n", state.now);
-					state.delta = (double)(state.now - state.last) / SDL_GetPerformanceFrequency();
-					Uint64 test = (1000000000*(state.now - state.last)) / SDL_GetPerformanceFrequency();
-					printf("delta_ns: %llu\n", test);
-					printf("delta_s: %.9f\n", state.delta);
 				}
 			}
 		}
