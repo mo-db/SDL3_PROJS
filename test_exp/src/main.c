@@ -24,14 +24,23 @@ static SDL_Surface *buffer_surface;
 static Uint32 *pixel_buffer;
 static SDL_Event event;
 
+static void dbugPrint()
+{
+	printf("### DEBUG PRINT ###\n");
+	printf("delta_ns: %llu\n", state.delta_ns);
+	printf("accum: %llu\n", state.accum);
+	printf("last: %llu\n", state.last);
+	printf("now: %llu\n", state.now);
+}
+
 static void update()
 {
-	;
+	SDL_Delay(10);
 }
 
 static void render()
 {
-	;
+	SDL_DelayNS(1000);
 }
 
 static void panicAndAbort(const char *title, const char *text)
@@ -78,6 +87,7 @@ int main()
 			}
 		}
 		while (state.accum > TICK_DURATION_NS) {
+			dbugPrint();
 			update();
 			state.accum -= TICK_DURATION_NS;
 		}
