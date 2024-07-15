@@ -2,11 +2,17 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#define TARGET_FPS 120;
-#define TICK_DURATION_NS 8333333;
+#define TESTING
+#ifdef TESTING
+#define TARGET_FPS 1
+#define TICK_DURATION_NS 1000000000*((1/TARGET_FPS)/4)
+#else
+#define TARGET_FPS 120
+#define TICK_DURATION_NS 1000000000*((1/TARGET_FPS)/4)
+#endif
 
 static struct {
-	Uint32 accum;
+	Uint64 accum;
 	Uint64 now;
 	Uint64 last;
 	Uint64 delta_ns;
@@ -16,6 +22,17 @@ static SDL_Window *window;
 static SDL_Surface *screen_surface;
 static SDL_Surface *buffer_surface;
 static Uint32 *pixel_buffer;
+static SDL_Event event;
+
+static void update()
+{
+	;
+}
+
+static void render()
+{
+	;
+}
 
 static void panicAndAbort(const char *title, const char *text)
 {/*{{{*/
@@ -37,19 +54,20 @@ int main()
 	}
 	
 	screen_surface = SDL_GetWindowSurface(window);
-	buffer_surface = SDL_CreateSurfaceFrom(640, 480, SDL_PIXELFORMAT_RGB24, pixel_buffer, 0); // fill in 0 field
+	buffer_surface = SDL_CreateSurfaceFrom(640, 480, SDL_PIXELFORMAT_RGB24, pixel_buffer, 0);
 	
 	state.now = SDL_GetPerformanceCounter();
 	Uint8 keep_going = 1;
 	while (keep_going) {
 		state.last = state.now;
 		state.now = SDL_GetPerformanceCounter();
+ 		// PerformanceFrequency: 24.000.000 counts/s - 0.024 counts/ns
 		state.delta_ns = (1000000000*(state.now - state.last)) / SDL_GetPerformanceFrequency();
 		printf("delta_ns: %llu\n", state.delta_ns);
+		state.accum += state.delta_ns;
 		
 		// event loop
-		SDL_Delay(100);
-		SDL_Event event;
+		SDL_Delay(500);
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_EVENT_QUIT) {
 				keep_going = 0;
@@ -59,6 +77,11 @@ int main()
 				}
 			}
 		}
+		while (state.accum > TICK_DURATION_NS) {
+			update();
+			state.accum -= TICK_DURATION_NS;
+		}
+		render();
 	}
 	return 0;
 }
