@@ -4,11 +4,11 @@
 
 #define TESTING
 #ifdef TESTING
-#define TARGET_FPS 1
-#define TICK_DURATION_NS 1000000000*((1/TARGET_FPS)/4)
+static const double TARGET_FPS = 1.0;
+static const Uint64 TICK_DURATION_NS = (1000000000*((1.0/TARGET_FPS)/4.0));
 #else
-#define TARGET_FPS 120
-#define TICK_DURATION_NS 1000000000*((1/TARGET_FPS)/4)
+static const double TARGET_FPS = 120.0;
+static const Uint64 TICK_DURATION_NS = (1000000000*((1.0/TARGET_FPS)/4.0));
 #endif
 
 static struct {
@@ -24,15 +24,6 @@ static SDL_Surface *buffer_surface;
 static Uint32 *pixel_buffer;
 static SDL_Event event;
 
-static void dbugPrint()
-{
-	printf("### DEBUG PRINT ###\n");
-	printf("delta_ns: %llu\n", state.delta_ns);
-	printf("accum: %llu\n", state.accum);
-	printf("last: %llu\n", state.last);
-	printf("now: %llu\n", state.now);
-}
-
 static void update()
 {
 	SDL_Delay(10);
@@ -40,7 +31,19 @@ static void update()
 
 static void render()
 {
+	//SDL_BlitSurface(buffer_surface, NULL, screen_surface, NULL);
+	//SDL_UpdateWindowSurface(window);
 	SDL_DelayNS(1000);
+}
+
+static void dbugPrint()
+{
+	printf("\n### DEBUG PRINT ###\n");
+	printf("delta_ns:	%llu\n", state.delta_ns);
+	printf("accum:		%llu\n", state.accum);
+	printf("tick_dur:	%llu\n", TICK_DURATION_NS);
+	printf("last:		%llu\n", state.last);
+	printf("now:		%llu\n", state.now);
 }
 
 static void panicAndAbort(const char *title, const char *text)
@@ -63,7 +66,10 @@ int main()
 	}
 	
 	screen_surface = SDL_GetWindowSurface(window);
-	buffer_surface = SDL_CreateSurfaceFrom(640, 480, SDL_PIXELFORMAT_RGB24, pixel_buffer, 0);
+	buffer_surface = SDL_CreateSurfaceFrom(640, 480, SDL_PIXELFORMAT_XRGB8888, pixel_buffer, 0);
+
+	printf("screen_pixelformat: %s\n", SDL_GetPixelFormatName(screen_surface->format));
+	printf("buffer_pixelformat: %s\n", SDL_GetPixelFormatName(buffer_surface->format));
 	
 	state.now = SDL_GetPerformanceCounter();
 	Uint8 keep_going = 1;
@@ -72,11 +78,11 @@ int main()
 		state.now = SDL_GetPerformanceCounter();
  		// PerformanceFrequency: 24.000.000 counts/s - 0.024 counts/ns
 		state.delta_ns = (1000000000*(state.now - state.last)) / SDL_GetPerformanceFrequency();
-		printf("delta_ns: %llu\n", state.delta_ns);
 		state.accum += state.delta_ns;
 		
+		SDL_Delay(300);
+
 		// event loop
-		SDL_Delay(500);
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_EVENT_QUIT) {
 				keep_going = 0;
@@ -86,12 +92,14 @@ int main()
 				}
 			}
 		}
-		while (state.accum > TICK_DURATION_NS) {
-			dbugPrint();
-			update();
-			state.accum -= TICK_DURATION_NS;
-		}
-		render();
+
+		/* dbugPrint(); */
+		/* while (state.accum > TICK_DURATION_NS) { */
+		/* 	dbugPrint(); */
+		/* 	update(); */
+		/* 	state.accum -= TICK_DURATION_NS; */
+		/* } */
+		/* render(); */
 	}
 	return 0;
 }
