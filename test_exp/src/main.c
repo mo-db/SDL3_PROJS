@@ -12,40 +12,28 @@ static const Uint64 TICK_DURATION_NS = (1000000000*((1.0/TARGET_FPS)/4.0));
 #endif
 
 static struct {
-	Uint64 accum;
-	Uint64 now;
-	Uint64 last;
-	Uint64 delta_ns;
+	Uint64 accum;		// frametime accumulator
+	Uint64 tick_counter;
+	Uint32 per_frame_ticks;
+	Uint64 now;			// timer count of current frame
+	Uint64 last;		// timer count of last frame
+	Uint64 start;		// debug mesuring
+	Uint64 end;			// debug mesuring
+	Uint64 delta_ns;	// frame duration
+	double fps;
 } state;
 
-static SDL_Window *window;
-static SDL_Renderer *renderer;
-static SDL_Surface *screen_surface;
-static SDL_Surface *buffer_surface;
+static struct {
+	Uint32 width;
+	Uint32 height;
+	SDL_Window *window;
+	SDL_Surface *surface;
+	Uint32 surface_pixels_n;
+	Uint32 pixels_n;
+} window;
+
 static Uint32 *pixel_buffer;
 static SDL_Event event;
-
-static void update()
-{
-	SDL_Delay(10);
-}
-
-static void render()
-{
-	//SDL_BlitSurface(buffer_surface, NULL, screen_surface, NULL);
-	//SDL_UpdateWindowSurface(window);
-	SDL_DelayNS(1000);
-}
-
-static void dbugPrint()
-{
-	printf("\n### DEBUG PRINT ###\n");
-	printf("delta_ns:	%llu\n", state.delta_ns);
-	printf("accum:		%llu\n", state.accum);
-	printf("tick_dur:	%llu\n", TICK_DURATION_NS);
-	printf("last:		%llu\n", state.last);
-	printf("now:		%llu\n", state.now);
-}
 
 static void panicAndAbort(const char *title, const char *text)
 {/*{{{*/
@@ -55,47 +43,78 @@ static void panicAndAbort(const char *title, const char *text)
 	exit(1);
 }/*}}}*/
 
+static void dbugPrint()
+{/*{{{*/
+	printf("\n### DEBUG PRINT ###\n");
+	printf("delta_ns:	%llu\n", state.delta_ns);
+	printf("accu:		%llu\n", state.accum);
+	printf("tick_dur:	%llu\n", TICK_DURATION_NS);
+	state.fps = (1.0 / ((double)state.delta_ns / 1000000000.0));
+	printf("fps:		%.9f\n", state.fps);
+	/* printf("last:		%llu\n", state.last); */
+	/* printf("now:		%llu\n", state.now); */
+}/*}}}*/
+
+static void initWindow()
+{
+	window.width = 640;
+	window.height = 480;
+	window.window = SDL_CreateWindow("Window", 640, 480, SDL_WINDOW_METAL);
+	if (!window.window) {
+		panicAndAbort("Could't create window!", SDL_GetError());
+	}
+
+	window.surface = SDL_GetWindowSurface(window.window);
+	if (!window.surface) {
+		panicAndAbort("Could't fetch surface from window!", SDL_GetError());
+	}
+
+	window.pixels_n = window.width * window.height;
+	window.surface_pixels_n = window.surface->w * window.surface->h;
+}
+
+static void update()
+{
+	for (int i = 0; i < (int)(window.surface_pixels_n); i++) {
+		pixel_buffer[i] = 0xFF0000FF;
+	}
+
+	for (int i = 0; i < 100 && i < (int)(window.surface_pixels_n - (state.tick_counter % window.surface_pixels_n)); i++) {
+		pixel_buffer[(state.tick_counter % window.surface_pixels_n) + i] = 0xFF00FF00;
+	}
+}
+
+static void render()
+{
+	SDL_UpdateWindowSurface(window.window);
+	if (state.tick_counter % 100 == 0) {
+		dbugPrint();
+	}
+}
+
 int main()
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) == -1) {
 		panicAndAbort("SDL_Init error!", SDL_GetError());
 	}
+	initWindow();
 
-	window = SDL_CreateWindow("Window", 640, 480, SDL_WINDOW_METAL);
-	if (!window) {
-		panicAndAbort("Could't create window!", SDL_GetError());
+	pixel_buffer = (Uint32*)window.surface->pixels;
+	for (int i = 0; i < (int)(window.surface_pixels_n); i++) {
+		pixel_buffer[i] = 0xFFFFFFFF;
 	}
 
-	screen_surface = SDL_GetWindowSurface(window);
-	/* buffer_surface = SDL_CreateSurfaceFrom(640, 480, SDL_PIXELFORMAT_XRGB8888, pixel_buffer, 0); */
-
-	printf("screen_pixelformat: %s\n", SDL_GetPixelFormatName(screen_surface->format));
-	/* printf("buffer_pixelformat: %s\n", SDL_GetPixelFormatName(buffer_surface->format)); */
-
-	Uint32 *pixels = (Uint32*)screen_surface->pixels;
-	for (int i = 0; i < (screen_surface->w * screen_surface->h); i++) {
-		pixels[i] = 0xFF0000FF;
-	}
-	Uint64 start = 0;
-	Uint64 end = 0;
-	Uint64 delta_ns = 0;
-
-	Uint32 test = 0;
-	state.now = SDL_GetPerformanceCounter();
+	// main loop
 	Uint8 keep_going = 1;
+	state.now = SDL_GetPerformanceCounter();
 	while (keep_going) {
-		/* start = SDL_GetPerformanceCounter(); */
-
-		/* //printf("frame start:		%llu\n", SDL_GetPerformanceCounter()); */
-		/* state.last = state.now; */
-		/* state.now = SDL_GetPerformanceCounter(); */
-		/* 	// PerformanceFrequency: 24.000.000 counts/s - 0.024 counts/ns */
-		/* state.delta_ns = (1000000000*(state.now - state.last)) / SDL_GetPerformanceFrequency(); */
-		/* state.accum += state.delta_ns; */
+		state.last = state.now;
+		state.now = SDL_GetPerformanceCounter();
+		// PerformanceFrequency: 24.000.000 counts/s - 0.024 counts/ns
+		state.delta_ns = (1000000000*(state.now - state.last)) / SDL_GetPerformanceFrequency();
+		state.accum += state.delta_ns;
 		
-
-		//SDL_DelayNS(100);
-		// event loop
+		// poll for events 
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_EVENT_QUIT) {
 				keep_going = 0;
@@ -106,38 +125,18 @@ int main()
 			}
 		}
 
-
-		if (test < (screen_surface->w * screen_surface->h)) {
-			test++;
-		} else {
-			test = 0;
+		while (state.accum > TICK_DURATION_NS) {
+			update(); // FIXME: graceful errhand
+			state.per_frame_ticks++;
+			if (state.tick_counter == UINT64_MAX) {
+				state.tick_counter = 0;
+			} else {
+				state.tick_counter++;
+			}
+			state.accum -= TICK_DURATION_NS;
 		}
-		for (int i = 0; i < (screen_surface->w * screen_surface->h); i++) {
-			pixels[i] = 0xFF0000FF;
-		}
-
-		for (int i = 0; i < 10; i++) {
-			pixels[test+i] = 0xFF00FF00;
-		}
-
-		/* SDL_UpdateWindowSurface(window); */
-		if ((test%100) == 2) {
-			start = SDL_GetPerformanceCounter();
-			SDL_UpdateWindowSurface(window);
-			end = SDL_GetPerformanceCounter();
-			delta_ns = (1000000000*(end - start)) / SDL_GetPerformanceFrequency();
-			printf("freq:		%llu\n", SDL_GetPerformanceFrequency());
-			printf("delta_ns: 	%llu\n", delta_ns);
-		}
-
-		/* dbugPrint(); */
-		/* while (state.accum > TICK_DURATION_NS) { */
-		/* 	dbugPrint(); */
-		/* 	update(); */
-		/* 	state.accum -= TICK_DURATION_NS; */
-		/* } */
-		/* render(); */
+		render(); // FIXME: graceful errhand
 	}
-	SDL_DestroyWindow(window);
+	SDL_DestroyWindow(window.window);
 	return 0;
 }
