@@ -19,7 +19,6 @@ static struct {
 } state;
 
 static SDL_Window *window;
-static SDL_Renderer *renderer;
 static SDL_Surface *screen_surface;
 static SDL_Surface *buffer_surface;
 static Uint32 *pixel_buffer;
@@ -50,7 +49,7 @@ static void dbugPrint()
 static void panicAndAbort(const char *title, const char *text)
 {/*{{{*/
 	fprintf(stderr, "PANIC: %s ... %s\n", title, text);
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, text, NULL); // if window exists attach to window
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, text, window); // if window exists attach to window
 	SDL_Quit(); // It's allways save to call, even if not initialised before!
 	exit(1);
 }/*}}}*/
@@ -61,44 +60,28 @@ int main()
 		panicAndAbort("SDL_Init error!", SDL_GetError());
 	}
 
-	window = SDL_CreateWindow("Window", 640, 480, SDL_WINDOW_METAL);
-	if (!window) {
+	window = SDL_CreateWindow("Window", 640, 480, 0);
+	if (window == NULL) {
 		panicAndAbort("Could't create window!", SDL_GetError());
 	}
-
-	/* renderer = SDL_CreateRenderer(window, "renderer"); */
-	/* if (!renderer) { */
-	/* 	panicAndAbort("SDL_CreateRenderer failed!", SDL_GetError()); */
-	/* SDL_CreateWindowAndRenderer("test", 640, 480, 0, &window, &renderer); */
-	/* } */
-	/* if (!SDL_CreateWindowAndRenderer("test", 640, 480, 0, &window, &renderer)) { */
-	/* 	panicAndAbort("SDL_CreateRenderer failed!", SDL_GetError()); */
-	/* } */
-	
 	
 	screen_surface = SDL_GetWindowSurface(window);
-	/* buffer_surface = SDL_CreateSurfaceFrom(640, 480, SDL_PIXELFORMAT_XRGB8888, pixel_buffer, 0); */
+	buffer_surface = SDL_CreateSurfaceFrom(640, 480, SDL_PIXELFORMAT_XRGB8888, pixel_buffer, 0);
 
 	printf("screen_pixelformat: %s\n", SDL_GetPixelFormatName(screen_surface->format));
-	/* printf("buffer_pixelformat: %s\n", SDL_GetPixelFormatName(buffer_surface->format)); */
-
-	Uint32 *pixels = (Uint32*)screen_surface->pixels;
-	for (int i = 0; i < (screen_surface->w * screen_surface->h); i++) {
-		pixels[i] = 0xFF0000FF;
-	}
-	Uint32 test = 0;
+	printf("buffer_pixelformat: %s\n", SDL_GetPixelFormatName(buffer_surface->format));
+	
 	state.now = SDL_GetPerformanceCounter();
 	Uint8 keep_going = 1;
 	while (keep_going) {
-		//printf("frame start:		%llu\n", SDL_GetPerformanceCounter());
 		state.last = state.now;
 		state.now = SDL_GetPerformanceCounter();
  		// PerformanceFrequency: 24.000.000 counts/s - 0.024 counts/ns
 		state.delta_ns = (1000000000*(state.now - state.last)) / SDL_GetPerformanceFrequency();
 		state.accum += state.delta_ns;
 		
+		SDL_Delay(300);
 
-		//SDL_DelayNS(100);
 		// event loop
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_EVENT_QUIT) {
@@ -110,32 +93,6 @@ int main()
 			}
 		}
 
-
-		if (test < (screen_surface->w * screen_surface->h)) {
-			test++;
-		} else {
-			test = 0;
-		}
-
-		for (int i = 0; i < 10; i++) {
-			pixels[test+i] = 0xFF00FF00;
-		}
-
-		/* SDL_RenderPresent(renderer); */
-		SDL_UpdateWindowSurface(window);
-		if ((test%1000) == 2) {
-			/* state.last = SDL_GetPerformanceCounter(); */
-			for (int i = 0; i < (screen_surface->w * screen_surface->h); i++) {
-				pixels[i] = 0xFF0000FF;
-			}
-			/* SDL_UpdateWindowSurface(window); */
-			/* state.now = SDL_GetPerformanceCounter(); */
-			/* state.delta_ns = (1000000000*(state.now - state.last)) / SDL_GetPerformanceFrequency(); */
-			/* printf("after update:		%llu\n", state.delta_ns); */
-			dbugPrint();
-
-		}
-
 		/* dbugPrint(); */
 		/* while (state.accum > TICK_DURATION_NS) { */
 		/* 	dbugPrint(); */
@@ -144,7 +101,5 @@ int main()
 		/* } */
 		/* render(); */
 	}
-	SDL_DestroyWindow(window);
-	/* SDL_DestroyRenderer(renderer); */
 	return 0;
 }
