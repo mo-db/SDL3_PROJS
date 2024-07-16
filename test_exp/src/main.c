@@ -61,7 +61,7 @@ int main()
 		panicAndAbort("SDL_Init error!", SDL_GetError());
 	}
 
-	window = SDL_CreateWindow("Window", 640, 480, SDL_WINDOW_METAL);
+	window = SDL_CreateWindow("Window", 3840, 2160, SDL_WINDOW_METAL);
 	if (!window) {
 		panicAndAbort("Could't create window!", SDL_GetError());
 	}
