@@ -61,21 +61,11 @@ int main()
 		panicAndAbort("SDL_Init error!", SDL_GetError());
 	}
 
-	window = SDL_CreateWindow("Window", 3840, 2160, SDL_WINDOW_METAL);
+	window = SDL_CreateWindow("Window", 640, 480, SDL_WINDOW_METAL);
 	if (!window) {
 		panicAndAbort("Could't create window!", SDL_GetError());
 	}
 
-	/* renderer = SDL_CreateRenderer(window, "renderer"); */
-	/* if (!renderer) { */
-	/* 	panicAndAbort("SDL_CreateRenderer failed!", SDL_GetError()); */
-	/* SDL_CreateWindowAndRenderer("test", 640, 480, 0, &window, &renderer); */
-	/* } */
-	/* if (!SDL_CreateWindowAndRenderer("test", 640, 480, 0, &window, &renderer)) { */
-	/* 	panicAndAbort("SDL_CreateRenderer failed!", SDL_GetError()); */
-	/* } */
-	
-	
 	screen_surface = SDL_GetWindowSurface(window);
 	/* buffer_surface = SDL_CreateSurfaceFrom(640, 480, SDL_PIXELFORMAT_XRGB8888, pixel_buffer, 0); */
 
@@ -86,16 +76,22 @@ int main()
 	for (int i = 0; i < (screen_surface->w * screen_surface->h); i++) {
 		pixels[i] = 0xFF0000FF;
 	}
+	Uint64 start = 0;
+	Uint64 end = 0;
+	Uint64 delta_ns = 0;
+
 	Uint32 test = 0;
 	state.now = SDL_GetPerformanceCounter();
 	Uint8 keep_going = 1;
 	while (keep_going) {
-		//printf("frame start:		%llu\n", SDL_GetPerformanceCounter());
-		state.last = state.now;
-		state.now = SDL_GetPerformanceCounter();
- 		// PerformanceFrequency: 24.000.000 counts/s - 0.024 counts/ns
-		state.delta_ns = (1000000000*(state.now - state.last)) / SDL_GetPerformanceFrequency();
-		state.accum += state.delta_ns;
+		/* start = SDL_GetPerformanceCounter(); */
+
+		/* //printf("frame start:		%llu\n", SDL_GetPerformanceCounter()); */
+		/* state.last = state.now; */
+		/* state.now = SDL_GetPerformanceCounter(); */
+		/* 	// PerformanceFrequency: 24.000.000 counts/s - 0.024 counts/ns */
+		/* state.delta_ns = (1000000000*(state.now - state.last)) / SDL_GetPerformanceFrequency(); */
+		/* state.accum += state.delta_ns; */
 		
 
 		//SDL_DelayNS(100);
@@ -116,24 +112,22 @@ int main()
 		} else {
 			test = 0;
 		}
+		for (int i = 0; i < (screen_surface->w * screen_surface->h); i++) {
+			pixels[i] = 0xFF0000FF;
+		}
 
 		for (int i = 0; i < 10; i++) {
 			pixels[test+i] = 0xFF00FF00;
 		}
 
-		/* SDL_RenderPresent(renderer); */
-		SDL_UpdateWindowSurface(window);
-		if ((test%1000) == 2) {
-			/* state.last = SDL_GetPerformanceCounter(); */
-			for (int i = 0; i < (screen_surface->w * screen_surface->h); i++) {
-				pixels[i] = 0xFF0000FF;
-			}
-			/* SDL_UpdateWindowSurface(window); */
-			/* state.now = SDL_GetPerformanceCounter(); */
-			/* state.delta_ns = (1000000000*(state.now - state.last)) / SDL_GetPerformanceFrequency(); */
-			/* printf("after update:		%llu\n", state.delta_ns); */
-			dbugPrint();
-
+		/* SDL_UpdateWindowSurface(window); */
+		if ((test%100) == 2) {
+			start = SDL_GetPerformanceCounter();
+			SDL_UpdateWindowSurface(window);
+			end = SDL_GetPerformanceCounter();
+			delta_ns = (1000000000*(end - start)) / SDL_GetPerformanceFrequency();
+			printf("freq:		%llu\n", SDL_GetPerformanceFrequency());
+			printf("delta_ns: 	%llu\n", delta_ns);
 		}
 
 		/* dbugPrint(); */
@@ -145,6 +139,5 @@ int main()
 		/* render(); */
 	}
 	SDL_DestroyWindow(window);
-	/* SDL_DestroyRenderer(renderer); */
 	return 0;
 }

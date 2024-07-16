@@ -1,4 +1,5 @@
 #include <SDL3/SDL.h>
+#include <stdlib.h>
 
 static SDL_Window *window = NULL;
 static SDL_Renderer *renderer = NULL;
@@ -19,7 +20,7 @@ static void panic_and_abort(const char *title, const char *text)
 int main(int argc, char **argv)
 {
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) == -1) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) == -1) {
 		panic_and_abort("SDL_Init error!", SDL_GetError());
 	}
 
@@ -39,13 +40,16 @@ int main(int argc, char **argv)
 
 	SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, width, height);
 	Uint32 pixels[width*height];
+	/* Uint32 start = 0; */
+	/* Uint32 end = 0; */
+	/* Uint32 delta_ns = 0; */
 
 	Uint32 test = 0;
-
 	int keep_going = 1;
+	SDL_Event event;
 	while (keep_going) {
-	SDL_FlushRenderer(renderer);
-		SDL_Event event;
+		/* start = SDL_GetPerformanceCounter(); */
+		SDL_FlushRenderer(renderer);
 		while (SDL_PollEvent(&event)) {
 			switch(event.type) {
 				case SDL_EVENT_QUIT:
@@ -70,8 +74,11 @@ int main(int argc, char **argv)
 		}
 
 		SDL_UpdateTexture(texture, NULL, pixels, width * sizeof(Uint32));
-		SDL_RenderCopy(renderer, texture, NULL, NULL);
+		SDL_RenderTexture(renderer, texture, NULL, NULL);
 		SDL_RenderPresent(renderer);
+		/* end = SDL_GetPerformanceCounter(); */
+		/* delta_ns = (1000000000*(end - start)) / SDL_GetPerformanceFrequency(); */
+		/* printf("delta_ns: %ul", delta_ns); */
 	}
 
 	SDL_DestroyWindow(window);

@@ -7,7 +7,7 @@ override CFLAGS+=-Wall -Wextra $(OPT) $(DEBUG)
 # project files and dir structure
 SRC=src/
 OUT=out/
-OBJS=$(OUT)test.o
+OBJS=$(OUT)main.o
 TARGET=$(OUT)a.out
 
 # includes
