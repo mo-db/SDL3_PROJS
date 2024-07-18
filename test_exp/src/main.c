@@ -1,8 +1,9 @@
 #include <SDL3/SDL.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <assert.h>
 
-#define TESTING
+/* #define TESTING */
 #ifdef TESTING
 static const double TARGET_FPS = 1.0;
 static const Uint64 TICK_DURATION_NS = (1000000000*((1.0/TARGET_FPS)/4.0));
@@ -38,7 +39,7 @@ static SDL_Event event;
 static void panicAndAbort(const char *title, const char *text)
 {/*{{{*/
 	fprintf(stderr, "PANIC: %s ... %s\n", title, text);
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, text, NULL); // if window exists attach to window
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, text, window.window); // if window exists attach to window
 	SDL_Quit(); // It's allways save to call, even if not initialised before!
 	exit(1);
 }/*}}}*/
@@ -71,6 +72,7 @@ static void initWindow()
 
 	window.pixels_n = window.width * window.height;
 	window.surface_pixels_n = window.surface->w * window.surface->h;
+	//assert(window.pixels_n == window.surface_pixels_n);
 }
 
 static void update()
@@ -80,7 +82,11 @@ static void update()
 	}
 
 	for (int i = 0; i < 100 && i < (int)(window.surface_pixels_n - (state.tick_counter % window.surface_pixels_n)); i++) {
-		pixel_buffer[(state.tick_counter % window.surface_pixels_n) + i] = 0xFF00FF00;
+		if (((state.tick_counter % window.surface_pixels_n) + i) > window.surface_pixels_n) {
+			panicAndAbort("Array out of bound acces!", "ERROR");
+		} else {
+			pixel_buffer[(state.tick_counter % window.surface_pixels_n) + i] = 0xFF00FF00;
+		}
 	}
 }
 
@@ -126,6 +132,7 @@ int main()
 		}
 
 		while (state.accum > TICK_DURATION_NS) {
+			printf("test activation\n");
 			update(); // FIXME: graceful errhand
 			state.per_frame_ticks++;
 			if (state.tick_counter == UINT64_MAX) {
@@ -135,8 +142,10 @@ int main()
 			}
 			state.accum -= TICK_DURATION_NS;
 		}
+		SDL_DelayNS(1000);
 		render(); // FIXME: graceful errhand
 	}
 	SDL_DestroyWindow(window.window);
+	SDL_Quit();
 	return 0;
 }

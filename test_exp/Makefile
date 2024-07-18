@@ -1,13 +1,13 @@
-# basic flags, DEBUG=-g
+# basic flags, 
+DEBUG=-g
 CC=clang
 OPT=-O0
-DEBUG=
 override CFLAGS+=-Wall -Wextra $(OPT) $(DEBUG)
 
 # project files and dir structure
 SRC=src/
 OUT=out/
-OBJS=$(OUT)test_opaque.o $(OUT)opaque.o
+OBJS=$(OUT)main.o
 TARGET=$(OUT)a.out
 
 # includes
