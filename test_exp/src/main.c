@@ -3,7 +3,9 @@
 #include <stdint.h>
 #include <assert.h>
 
-/* #define TESTING */
+// test a thing
+
+/* #dee TESTING */
 #ifdef TESTING
 static const double TARGET_FPS = 1.0;
 static const Uint64 TICK_DURATION_NS = (1000000000*((1.0/TARGET_FPS)/4.0));
