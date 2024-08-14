@@ -60,8 +60,8 @@ static void dbugPrint()
 
 static void initWindow()
 {
-	window.width = 640;
-	window.height = 480;
+	window.width = 1280; // /4 = 320
+	window.height = 960; // /4 = 240
 	window.window = SDL_CreateWindow("Window", 640, 480, SDL_WINDOW_METAL);
 	if (!window.window) {
 		panicAndAbort("Could't create window!", SDL_GetError());
