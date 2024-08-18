@@ -1,16 +1,10 @@
+#include "objects.h"
 #include <sdl3/sdl.h>
 #include <stdlib.h>
 #include <stdint.h>
 
 #define BO_NUMBER_HEIGHT 7
 #define BO_NUMBER_WIDTH 5
-
-typedef struct {
-	Uint32 width;
-	Uint32 height;
-	Uint32 n_bits;
-	const Uint8 (*bitmap1_data)[BO_NUMBER_WIDTH];
-} bit_digit;
 
 static const Uint8 bit_digit_1[] = {
 	0, 0, 1, 0, 0,
@@ -101,9 +95,10 @@ static const Uint8 bit_digit_0[] = {
 	1, 0, 0, 0, 1,
 	0, 1, 1, 1, 0
 };
-bit_digit bd_1 = { 
+
+const bit_digit bd_1 = { 
     .width = BO_NUMBER_WIDTH, 
     .height = BO_NUMBER_HEIGHT, 
     .n_bits = BO_NUMBER_WIDTH * BO_NUMBER_HEIGHT, 
-    .bitmap1_data = bit_digit_1 
+    .data = bit_digit_1,
 };

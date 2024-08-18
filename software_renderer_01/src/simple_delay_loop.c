@@ -1,3 +1,4 @@
+#include "objects.h"
 #include <sdl3/sdl.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -37,110 +38,98 @@ static struct {
 static Uint32 *pixel_buffer;
 static SDL_Event event;
 
-// TEST
-#define BO_NUMBER_HEIGHT 7
-#define BO_NUMBER_WIDTH 5
+#define BD_HEIGHT 7
+#define BD_WIDTH 5
 
-static Uint8 bit_digit_1[BO_NUMBER_HEIGHT][BO_NUMBER_WIDTH] = {
-	{0, 0, 1, 0, 0},
-	{0, 1, 1, 0, 0},
-	{0, 0, 1, 0, 0},
-	{0, 0, 1, 0, 0},
-	{0, 0, 1, 0, 0},
-	{0, 0, 1, 0, 0},
-	{1, 1, 1, 1, 1}
+static const Uint8 bit_digit_1[] = {
+	0, 0, 1, 0, 0,
+	0, 1, 1, 0, 0,
+	0, 0, 1, 0, 0,
+	0, 0, 1, 0, 0,
+	0, 0, 1, 0, 0,
+	0, 0, 1, 0, 0,
+	1, 1, 1, 1, 1
 };
 
-static Uint8 bit_digit_2[BO_NUMBER_HEIGHT][BO_NUMBER_WIDTH] = {
-	{0, 1, 1, 1, 0},
-	{1, 0, 0, 0, 1},
-	{0, 0, 0, 0, 1},
-	{0, 0, 0, 1, 0},
-	{0, 0, 1, 0, 0},
-	{0, 1, 0, 0, 0},
-	{1, 1, 1, 1, 1}
+static const Uint8 bit_digit_2[] = {
+	0, 1, 1, 1, 0,
+	1, 0, 0, 0, 1,
+	0, 0, 0, 0, 1,
+	0, 0, 0, 1, 0,
+	0, 0, 1, 0, 0,
+	0, 1, 0, 0, 0,
+	1, 1, 1, 1, 1
 };
 
-static Uint8 bit_digit_3[BO_NUMBER_HEIGHT][BO_NUMBER_WIDTH] = {
-	{0, 1, 1, 1, 0},
-	{1, 0, 0, 0, 1},
-	{0, 0, 0, 0, 1},
-	{0, 0, 1, 1, 0},
-	{0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 1},
-	{0, 1, 1, 1, 0}
+static const Uint8 bit_digit_3[] = {
+	0, 1, 1, 1, 0,
+	1, 0, 0, 0, 1,
+	0, 0, 0, 0, 1,
+	0, 0, 1, 1, 0,
+	0, 0, 0, 0, 1,
+	1, 0, 0, 0, 1,
+	0, 1, 1, 1, 0
 };
 
-static Uint8 bit_digit_4[BO_NUMBER_HEIGHT][BO_NUMBER_WIDTH] = {
-	{0, 1, 0, 0, 1},
-	{0, 1, 0, 0, 1},
-	{1, 0, 0, 0, 1},
-	{1, 1, 1, 1, 1},
-	{0, 0, 0, 0, 1},
-	{0, 0, 0, 0, 1},
-	{0, 0, 0, 0, 1}
+static const Uint8 bit_digit_4[] = {
+	0, 1, 0, 0, 1,
+	0, 1, 0, 0, 1,
+	1, 0, 0, 0, 1,
+	1, 1, 1, 1, 1,
+	0, 0, 0, 0, 1,
+	0, 0, 0, 0, 1,
+	0, 0, 0, 0, 1
 };
 
-static Uint8 bit_digit_5[BO_NUMBER_HEIGHT][BO_NUMBER_WIDTH] = {
-	{1, 1, 1, 1, 1},
-	{1, 0, 0, 0, 0},
-	{1, 0, 0, 0, 0},
-	{1, 1, 1, 1, 0},
-	{0, 0, 0, 0, 1},
-	{1, 0, 0, 0, 1},
-	{0, 1, 1, 1, 0}
+static const Uint8 bit_digit_5[] = {
+	1, 1, 1, 1, 1,
+	1, 0, 0, 0, 0,
+	1, 0, 0, 0, 0,
+	1, 1, 1, 1, 0,
+	0, 0, 0, 0, 1,
+	1, 0, 0, 0, 1,
+	0, 1, 1, 1, 0
 };
 
-static Uint8 bit_digit_6[BO_NUMBER_HEIGHT][BO_NUMBER_WIDTH] = {
-	{0, 1, 1, 1, 0},
-	{1, 0, 0, 0, 0},
-	{1, 0, 0, 0, 0},
-	{1, 1, 1, 1, 0},
-	{1, 0, 0, 0, 1},
-	{1, 0, 0, 0, 1},
-	{0, 1, 1, 1, 0}
+static const Uint8 bit_digit_6[] = {
+	0, 1, 1, 1, 0,
+	1, 0, 0, 0, 0,
+	1, 0, 0, 0, 0,
+	1, 1, 1, 1, 0,
+	1, 0, 0, 0, 1,
+	1, 0, 0, 0, 1,
+	0, 1, 1, 1, 0
 };
 
-static Uint8 bit_digit_7[BO_NUMBER_HEIGHT][BO_NUMBER_WIDTH] = {
-	{1, 1, 1, 1, 1},
-	{0, 0, 0, 0, 1},
-	{0, 0, 0, 0, 1},
-	{0, 0, 0, 1, 0},
-	{0, 0, 1, 0, 0},
-	{0, 0, 1, 0, 0},
-	{0, 0, 1, 0, 0}
+static const Uint8 bit_digit_7[] = {
+	0, 1, 1, 1, 0,
+	1, 0, 0, 0, 1,
+	1, 0, 0, 0, 1,
+	0, 1, 1, 1, 0,
+	1, 0, 0, 0, 1,
+	1, 0, 0, 0, 1,
+	0, 1, 1, 1, 0
 };
 
-static Uint8 bit_digit_8[BO_NUMBER_HEIGHT][BO_NUMBER_WIDTH] = {
-	{0, 1, 1, 1, 0},
-	{1, 0, 0, 0, 1},
-	{1, 0, 0, 0, 1},
-	{0, 1, 1, 1, 0},
-	{1, 0, 0, 0, 1},
-	{1, 0, 0, 0, 1},
-	{0, 1, 1, 1, 0}
+static const Uint8 bit_digit_9[] = {
+	0, 1, 1, 1, 0,
+	1, 0, 0, 0, 1,
+	1, 0, 0, 0, 1,
+	0, 1, 1, 1, 1,
+	0, 0, 0, 0, 1,
+	0, 0, 0, 0, 1,
+	0, 1, 1, 1, 0
 };
 
-static Uint8 bit_digit_9[BO_NUMBER_HEIGHT][BO_NUMBER_WIDTH] = {
-	{0, 1, 1, 1, 0},
-	{1, 0, 0, 0, 1},
-	{1, 0, 0, 0, 1},
-	{0, 1, 1, 1, 1},
-	{0, 0, 0, 0, 1},
-	{0, 0, 0, 0, 1},
-	{0, 1, 1, 1, 0}
+static const Uint8 bit_digit_0[] = {
+	0, 1, 1, 1, 0,
+	1, 0, 0, 0, 1,
+	1, 0, 0, 1, 1,
+	1, 0, 1, 0, 1,
+	1, 1, 0, 0, 1,
+	1, 0, 0, 0, 1,
+	0, 1, 1, 1, 0
 };
-
-static Uint8 bit_digit_0[BO_NUMBER_HEIGHT][BO_NUMBER_WIDTH] = {
-	{0, 1, 1, 1, 0},
-	{1, 0, 0, 0, 1},
-	{1, 0, 0, 1, 1},
-	{1, 0, 1, 0, 1},
-	{1, 1, 0, 0, 1},
-	{1, 0, 0, 0, 1},
-	{0, 1, 1, 1, 0}
-};
-
 
 static void panicAndAbort(const char *title, const char *text)
 {/*{{{*/
@@ -187,10 +176,10 @@ static void drawNumber()
 	Uint32 offset = (y_offset * window.surface->w) + x_offset;
 	Uint32 buffer_pos = offset;
 
-	for (int i = 0; i < BO_NUMBER_HEIGHT; i++) {
-		for (int j = 0; j < BO_NUMBER_WIDTH; j++) {
-			if (bit_digit_1[i][j] == 0) {
-				pixel_buffer[buffer_pos + j] = 0x00000000;
+	for (int i = 0; i < BD_HEIGHT; i++) {
+		for (int j = 0; j < BD_WIDTH; j++) {
+			if (bit_digit_2[(i * BD_WIDTH) + j] == 0) {
+				//pixel_buffer[buffer_pos + j] = 0x00000000;
 			} else {
 				pixel_buffer[buffer_pos + j] = 0xFFFF0000;
 			}

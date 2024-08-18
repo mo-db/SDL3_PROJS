@@ -1,109 +1,26 @@
+#ifndef OBJECTS_H
+#define OBJECTS_H
+
 #include <sdl3/sdl.h>
 #include <stdlib.h>
 #include <stdint.h>
-
-#define BO_NUMBER_HEIGHT 7
-#define BO_NUMBER_WIDTH 5
 
 typedef struct {
 	Uint32 width;
 	Uint32 height;
 	Uint32 n_bits;
-	const Uint8 (*bitmap1_data)[BO_NUMBER_WIDTH];
+	const Uint8 *data;
 } bit_digit;
 
-static const Uint8 bit_digit_1[] = {
-	0, 0, 1, 0, 0,
-	0, 1, 1, 0, 0,
-	0, 0, 1, 0, 0,
-	0, 0, 1, 0, 0,
-	0, 0, 1, 0, 0,
-	0, 0, 1, 0, 0,
-	1, 1, 1, 1, 1
-};
+extern const bit_digit bd_1;
+extern const bit_digit bd_2;
+extern const bit_digit bd_3;
+extern const bit_digit bd_4;
+extern const bit_digit bd_5;
+extern const bit_digit bd_6;
+extern const bit_digit bd_7;
+extern const bit_digit bd_8;
+extern const bit_digit bd_9;
+extern const bit_digit bd_0;
 
-static const Uint8 bit_digit_2[] = {
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	0, 0, 0, 0, 1,
-	0, 0, 0, 1, 0,
-	0, 0, 1, 0, 0,
-	0, 1, 0, 0, 0,
-	1, 1, 1, 1, 1
-};
-
-static const Uint8 bit_digit_3[] = {
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	0, 0, 0, 0, 1,
-	0, 0, 1, 1, 0,
-	0, 0, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 0
-};
-
-static const Uint8 bit_digit_4[] = {
-	0, 1, 0, 0, 1,
-	0, 1, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	1, 1, 1, 1, 1,
-	0, 0, 0, 0, 1,
-	0, 0, 0, 0, 1,
-	0, 0, 0, 0, 1
-};
-
-static const Uint8 bit_digit_5[] = {
-	1, 1, 1, 1, 1,
-	1, 0, 0, 0, 0,
-	1, 0, 0, 0, 0,
-	1, 1, 1, 1, 0,
-	0, 0, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 0
-};
-
-static const Uint8 bit_digit_6[] = {
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 0,
-	1, 0, 0, 0, 0,
-	1, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 0
-};
-
-static const Uint8 bit_digit_7[] = {
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 0
-};
-
-static const Uint8 bit_digit_9[] = {
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 1,
-	0, 0, 0, 0, 1,
-	0, 0, 0, 0, 1,
-	0, 1, 1, 1, 0
-};
-
-static const Uint8 bit_digit_0[] = {
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	1, 0, 0, 1, 1,
-	1, 0, 1, 0, 1,
-	1, 1, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 0
-};
-bit_digit bd_1 = { 
-    .width = BO_NUMBER_WIDTH, 
-    .height = BO_NUMBER_HEIGHT, 
-    .n_bits = BO_NUMBER_WIDTH * BO_NUMBER_HEIGHT, 
-    .bitmap1_data = bit_digit_1 
-};
+#endif
