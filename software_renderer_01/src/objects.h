@@ -2,25 +2,11 @@
 #define OBJECTS_H
 
 #include <sdl3/sdl.h>
-#include <stdlib.h>
-#include <stdint.h>
 
-typedef struct {
-	Uint32 width;
-	Uint32 height;
-	Uint32 n_bits;
-	const Uint8 *data;
-} bit_digit;
+#define BD_HEIGHT 7
+#define BD_WIDTH 5
+#define BD_N 10
 
-extern const bit_digit bd_1;
-extern const bit_digit bd_2;
-extern const bit_digit bd_3;
-extern const bit_digit bd_4;
-extern const bit_digit bd_5;
-extern const bit_digit bd_6;
-extern const bit_digit bd_7;
-extern const bit_digit bd_8;
-extern const bit_digit bd_9;
-extern const bit_digit bd_0;
-
+// External tells the compiler that the var is defined elsewere -> no warning
+extern const Uint8 *BIT_DIGITS[BD_N];
 #endif

@@ -38,99 +38,6 @@ static struct {
 static Uint32 *pixel_buffer;
 static SDL_Event event;
 
-#define BD_HEIGHT 7
-#define BD_WIDTH 5
-
-static const Uint8 bit_digit_1[] = {
-	0, 0, 1, 0, 0,
-	0, 1, 1, 0, 0,
-	0, 0, 1, 0, 0,
-	0, 0, 1, 0, 0,
-	0, 0, 1, 0, 0,
-	0, 0, 1, 0, 0,
-	1, 1, 1, 1, 1
-};
-
-static const Uint8 bit_digit_2[] = {
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	0, 0, 0, 0, 1,
-	0, 0, 0, 1, 0,
-	0, 0, 1, 0, 0,
-	0, 1, 0, 0, 0,
-	1, 1, 1, 1, 1
-};
-
-static const Uint8 bit_digit_3[] = {
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	0, 0, 0, 0, 1,
-	0, 0, 1, 1, 0,
-	0, 0, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 0
-};
-
-static const Uint8 bit_digit_4[] = {
-	0, 1, 0, 0, 1,
-	0, 1, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	1, 1, 1, 1, 1,
-	0, 0, 0, 0, 1,
-	0, 0, 0, 0, 1,
-	0, 0, 0, 0, 1
-};
-
-static const Uint8 bit_digit_5[] = {
-	1, 1, 1, 1, 1,
-	1, 0, 0, 0, 0,
-	1, 0, 0, 0, 0,
-	1, 1, 1, 1, 0,
-	0, 0, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 0
-};
-
-static const Uint8 bit_digit_6[] = {
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 0,
-	1, 0, 0, 0, 0,
-	1, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 0
-};
-
-static const Uint8 bit_digit_7[] = {
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 0
-};
-
-static const Uint8 bit_digit_9[] = {
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 1,
-	0, 0, 0, 0, 1,
-	0, 0, 0, 0, 1,
-	0, 1, 1, 1, 0
-};
-
-static const Uint8 bit_digit_0[] = {
-	0, 1, 1, 1, 0,
-	1, 0, 0, 0, 1,
-	1, 0, 0, 1, 1,
-	1, 0, 1, 0, 1,
-	1, 1, 0, 0, 1,
-	1, 0, 0, 0, 1,
-	0, 1, 1, 1, 0
-};
-
 static void panicAndAbort(const char *title, const char *text)
 {/*{{{*/
 	fprintf(stderr, "PANIC: %s ... %s\n", title, text);
@@ -169,19 +76,19 @@ static void initWindow()
 	window.surface_pixels_n = window.surface->w * window.surface->h;
 }
 
-static void drawNumber()
+static void drawNumber(char digit, Uint32 x_offset, Uint32 y_offset)
 {
-	Uint32 x_offset = 20;
-	Uint32 y_offset = 10;
 	Uint32 offset = (y_offset * window.surface->w) + x_offset;
 	Uint32 buffer_pos = offset;
 
 	for (int i = 0; i < BD_HEIGHT; i++) {
 		for (int j = 0; j < BD_WIDTH; j++) {
-			if (bit_digit_2[(i * BD_WIDTH) + j] == 0) {
-				//pixel_buffer[buffer_pos + j] = 0x00000000;
-			} else {
+			if (BIT_DIGITS[0][(i * BD_WIDTH) + j] == 1) {
 				pixel_buffer[buffer_pos + j] = 0xFFFF0000;
+			} else if (BIT_DIGITS[0][(i * BD_WIDTH) + j] == 0) {
+				;
+			} else {
+				//TODO: error handling
 			}
 		}
 			buffer_pos += window.surface->w;
@@ -193,7 +100,7 @@ static void update()
 	for (int i = 0; i < (int)(window.surface_pixels_n/2); i++) {
 		pixel_buffer[i] = 0xFF0000FF;
 	}
-	drawNumber();
+	drawNumber(0, 10, 20);
 }
 
 static void render()

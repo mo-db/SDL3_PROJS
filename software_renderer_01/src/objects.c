@@ -1,12 +1,7 @@
 #include "objects.h"
 #include <sdl3/sdl.h>
-#include <stdlib.h>
-#include <stdint.h>
 
-#define BO_NUMBER_HEIGHT 7
-#define BO_NUMBER_WIDTH 5
-
-static const Uint8 bit_digit_1[] = {
+static const Uint8 BD_1[] = {
 	0, 0, 1, 0, 0,
 	0, 1, 1, 0, 0,
 	0, 0, 1, 0, 0,
@@ -16,7 +11,7 @@ static const Uint8 bit_digit_1[] = {
 	1, 1, 1, 1, 1
 };
 
-static const Uint8 bit_digit_2[] = {
+static const Uint8 BD_2[] = {
 	0, 1, 1, 1, 0,
 	1, 0, 0, 0, 1,
 	0, 0, 0, 0, 1,
@@ -26,7 +21,7 @@ static const Uint8 bit_digit_2[] = {
 	1, 1, 1, 1, 1
 };
 
-static const Uint8 bit_digit_3[] = {
+static const Uint8 BD_3[] = {
 	0, 1, 1, 1, 0,
 	1, 0, 0, 0, 1,
 	0, 0, 0, 0, 1,
@@ -36,7 +31,7 @@ static const Uint8 bit_digit_3[] = {
 	0, 1, 1, 1, 0
 };
 
-static const Uint8 bit_digit_4[] = {
+static const Uint8 BD_4[] = {
 	0, 1, 0, 0, 1,
 	0, 1, 0, 0, 1,
 	1, 0, 0, 0, 1,
@@ -46,7 +41,7 @@ static const Uint8 bit_digit_4[] = {
 	0, 0, 0, 0, 1
 };
 
-static const Uint8 bit_digit_5[] = {
+static const Uint8 BD_5[] = {
 	1, 1, 1, 1, 1,
 	1, 0, 0, 0, 0,
 	1, 0, 0, 0, 0,
@@ -56,7 +51,7 @@ static const Uint8 bit_digit_5[] = {
 	0, 1, 1, 1, 0
 };
 
-static const Uint8 bit_digit_6[] = {
+static const Uint8 BD_6[] = {
 	0, 1, 1, 1, 0,
 	1, 0, 0, 0, 0,
 	1, 0, 0, 0, 0,
@@ -66,7 +61,17 @@ static const Uint8 bit_digit_6[] = {
 	0, 1, 1, 1, 0
 };
 
-static const Uint8 bit_digit_7[] = {
+static const Uint8 BD_7[] = {
+	1, 1, 1, 1, 1,
+	0, 0, 0, 0, 1,
+	0, 0, 0, 0, 1,
+	0, 0, 0, 1, 0,
+	0, 0, 1, 0, 0,
+	0, 0, 1, 0, 0,
+	0, 1, 1, 0, 0
+};
+
+static const Uint8 BD_8[] = {
 	0, 1, 1, 1, 0,
 	1, 0, 0, 0, 1,
 	1, 0, 0, 0, 1,
@@ -76,7 +81,7 @@ static const Uint8 bit_digit_7[] = {
 	0, 1, 1, 1, 0
 };
 
-static const Uint8 bit_digit_9[] = {
+static const Uint8 BD_9[] = {
 	0, 1, 1, 1, 0,
 	1, 0, 0, 0, 1,
 	1, 0, 0, 0, 1,
@@ -86,7 +91,7 @@ static const Uint8 bit_digit_9[] = {
 	0, 1, 1, 1, 0
 };
 
-static const Uint8 bit_digit_0[] = {
+static const Uint8 BD_0[] = {
 	0, 1, 1, 1, 0,
 	1, 0, 0, 0, 1,
 	1, 0, 0, 1, 1,
@@ -96,9 +101,17 @@ static const Uint8 bit_digit_0[] = {
 	0, 1, 1, 1, 0
 };
 
-const bit_digit bd_1 = { 
-    .width = BO_NUMBER_WIDTH, 
-    .height = BO_NUMBER_HEIGHT, 
-    .n_bits = BO_NUMBER_WIDTH * BO_NUMBER_HEIGHT, 
-    .data = bit_digit_1,
+const Uint8 *BIT_DIGITS[] = {
+	BD_0,
+	BD_1,
+	BD_2,
+	BD_3,
+	BD_4,
+	BD_5,
+	BD_6,
+	BD_7,
+	BD_8,
+	BD_9,
 };
+
+
