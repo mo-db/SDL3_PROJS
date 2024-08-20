@@ -8,14 +8,13 @@ EXE := $(BIN_DIR)/a.out
 SRC := $(wildcard $(SRC_DIR)/*.c)
 OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-# My old stuff
-FRAMEWORKS=-framework Cocoa
-SDL2=`sdl2-config --libs --cflags`
-SDL3=`pkg-config --libs --cflags sdl3`
+# Libs
+SDL_INCLUDE := $(shell pkg-config --cflags sdl3)
+SDL_LIBS := $(shell pkg-config --libs sdl3)
 
 CPPFLAGS := -MMD -MP
-CFLAGS   := -Wall
-LDFLAGS  := $(SDL3)
+CFLAGS   := -Wall -g $(SDL_INCLUDE)
+LDFLAGS  := $(SDL_LIBS)
 
 # Tell make to NOT treat the recepie all as a file
 .PHONY: all clean
@@ -25,10 +24,11 @@ all: $(EXE)
 # Linking the object files, building executable
 # targets : normal-prerequisites | order-only-prerequisites
 # the latter are never checked for out of date
-$(EXE): $(OBJ) | $(SRC_DIR) $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) $(INC_DIR)
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) $(LIBS) -o $@
+$(EXE): $(OBJ) | $(SRC_DIR) $(OBJ_DIR) $(BIN_DIR)
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+	dsymutil $@  # Ensure the .dSYM bundle is created
 
-$(SRC_DIR) $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) $(INC_DIR):
+$(SRC_DIR) $(OBJ_DIR) $(BIN_DIR):
 	mkdir -p $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)

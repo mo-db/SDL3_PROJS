@@ -1,0 +1,26 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     'bin/a.out'
+relocations:
+  - { offset: 0x33, size: 0x8, addend: 0x0, symName: _BIT_DIGITS, symObjAddr: 0x160, symBinAddr: 0x100008000, symSize: 0x0 }
+  - { offset: 0x82, size: 0x8, addend: 0x0, symName: _BD_0, symObjAddr: 0x0, symBinAddr: 0x100003DDC, symSize: 0x0 }
+  - { offset: 0xA3, size: 0x8, addend: 0x0, symName: _BD_1, symObjAddr: 0x23, symBinAddr: 0x100003DFF, symSize: 0x0 }
+  - { offset: 0xB8, size: 0x8, addend: 0x0, symName: _BD_2, symObjAddr: 0x46, symBinAddr: 0x100003E22, symSize: 0x0 }
+  - { offset: 0xCD, size: 0x8, addend: 0x0, symName: _BD_3, symObjAddr: 0x69, symBinAddr: 0x100003E45, symSize: 0x0 }
+  - { offset: 0xE2, size: 0x8, addend: 0x0, symName: _BD_4, symObjAddr: 0x8C, symBinAddr: 0x100003E68, symSize: 0x0 }
+  - { offset: 0xF7, size: 0x8, addend: 0x0, symName: _BD_5, symObjAddr: 0xAF, symBinAddr: 0x100003E8B, symSize: 0x0 }
+  - { offset: 0x10C, size: 0x8, addend: 0x0, symName: _BD_6, symObjAddr: 0xD2, symBinAddr: 0x100003EAE, symSize: 0x0 }
+  - { offset: 0x121, size: 0x8, addend: 0x0, symName: _BD_7, symObjAddr: 0xF5, symBinAddr: 0x100003ED1, symSize: 0x0 }
+  - { offset: 0x136, size: 0x8, addend: 0x0, symName: _BD_8, symObjAddr: 0x118, symBinAddr: 0x100003EF4, symSize: 0x0 }
+  - { offset: 0x14B, size: 0x8, addend: 0x0, symName: _BD_9, symObjAddr: 0x13B, symBinAddr: 0x100003F17, symSize: 0x0 }
+  - { offset: 0x17A, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x1000038B8, symSize: 0x160 }
+  - { offset: 0x1A1, size: 0x8, addend: 0x0, symName: _window, symObjAddr: 0x6B40, symBinAddr: 0x100008050, symSize: 0x0 }
+  - { offset: 0x5BB, size: 0x8, addend: 0x0, symName: _pixel_buffer, symObjAddr: 0x6B60, symBinAddr: 0x100008070, symSize: 0x0 }
+  - { offset: 0x5D5, size: 0x8, addend: 0x0, symName: _event, symObjAddr: 0x6B68, symBinAddr: 0x100008078, symSize: 0x0 }
+  - { offset: 0x22D5, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x1000038B8, symSize: 0x160 }
+  - { offset: 0x2319, size: 0x8, addend: 0x0, symName: _panicAndAbort, symObjAddr: 0x160, symBinAddr: 0x100003A18, symSize: 0x68 }
+  - { offset: 0x234B, size: 0x8, addend: 0x0, symName: _initWindow, symObjAddr: 0x1C8, symBinAddr: 0x100003A80, symSize: 0xF0 }
+  - { offset: 0x2360, size: 0x8, addend: 0x0, symName: _update, symObjAddr: 0x2B8, symBinAddr: 0x100003B70, symSize: 0x7C }
+  - { offset: 0x2392, size: 0x8, addend: 0x0, symName: _drawNumber, symObjAddr: 0x334, symBinAddr: 0x100003BEC, symSize: 0x140 }
+  - { offset: 0x2426, size: 0x8, addend: 0x0, symName: _render, symObjAddr: 0x474, symBinAddr: 0x100003D2C, symSize: 0x20 }
+...
