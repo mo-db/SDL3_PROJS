@@ -26,7 +26,7 @@ all: $(EXE)
 # the latter are never checked for out of date
 $(EXE): $(OBJ) | $(SRC_DIR) $(OBJ_DIR) $(BIN_DIR)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
-	dsymutil $@  # Ensure the .dSYM bundle is created
+	dsymutil $@
 
 $(SRC_DIR) $(OBJ_DIR) $(BIN_DIR):
 	mkdir -p $@
@@ -35,6 +35,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 clean:
-	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR)
+	@$(RM) -r $(BIN_DIR) $(OBJ_DIR)
 
 -include $(OBJ:.o=.d)
