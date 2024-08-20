@@ -1,44 +1,40 @@
-# basic flags, 
-DEBUG=-g
+# Makefile needs tab not spaces before recepie command
+SRC_DIR := src
+OBJ_DIR := obj
+BIN_DIR := bin
+
 CC=clang
-OPT=-O0
-override CFLAGS+=-Wall -Wextra $(OPT) $(DEBUG)
+EXE := $(BIN_DIR)/a.out
+SRC := $(wildcard $(SRC_DIR)/*.c)
+OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-# project files and dir structure
-SRC=src/
-OUT=out/
-# CHANGE TO SELECT COMPILE TARGET
-OBJS=$(OUT)simple_delay_loop.o
-TARGET=$(OUT)a.out
-
-# includes
+# My old stuff
 FRAMEWORKS=-framework Cocoa
 SDL2=`sdl2-config --libs --cflags`
 SDL3=`pkg-config --libs --cflags sdl3`
-LIBS=$(SDL3)
 
+CPPFLAGS := -MMD -MP
+CFLAGS   := -Wall
+LDFLAGS  := $(SDL3)
 
-# Default target
-all: check_outdir $(TARGET)
+# Tell make to NOT treat the recepie all as a file
+.PHONY: all clean
+# Default target, executed with 'make' command
+all: $(EXE)
 
-# Check if directories exist and create them if they don't
-check_outdir:
-	@mkdir -p $(OUT)
+# Linking the object files, building executable
+# targets : normal-prerequisites | order-only-prerequisites
+# the latter are never checked for out of date
+$(EXE): $(OBJ) | $(SRC_DIR) $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) $(INC_DIR)
+	$(CC) $(LDFLAGS) $^ $(LDLIBS) $(LIBS) -o $@
 
-# Link the object files to create the executable
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LIBS)
+$(SRC_DIR) $(OBJ_DIR) $(BIN_DIR) $(LIB_DIR) $(INC_DIR):
+	mkdir -p $@
 
-# Compile c source into objects append header files to rebuild if changed
-$(OUT)%.o:$(SRC)%.c
-	$(CC) $(CFLAGS) -c $< -o $@
-# Compile objective-c source into objects append header files to rebuild if changed
-$(OUT)%.o:$(SRC)%.m
-	$(CC) $(CFLAGS) -c $< -o $@
-
-run:
-	./$(TARGET)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR)
 
+-include $(OBJ:.o=.d)
