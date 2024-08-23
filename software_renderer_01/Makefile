@@ -21,6 +21,8 @@ LDFLAGS  := $(SDL_LIBS)
 # Default target, executed with 'make' command
 all: $(EXE)
 
+run: $(EXE)
+	./bin/a.out
 # Linking the object files, building executable
 # targets : normal-prerequisites | order-only-prerequisites
 # the latter are never checked for out of date

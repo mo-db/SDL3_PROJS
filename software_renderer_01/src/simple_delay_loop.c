@@ -86,42 +86,60 @@ static void initWindow()
 
 static void drawNumber(char digit, Uint32 x_offset, Uint32 y_offset)
 {
-	Uint32 offset = (y_offset * window.surface->w) + x_offset;
+	Uint32 offset = (y_offset * low_res_width) + x_offset;
 	Uint32 buffer_pos = offset;
 
 	for (int i = 0; i < BD_HEIGHT; i++) {
 		for (int j = 0; j < BD_WIDTH; j++) {
-			if (BIT_DIGITS[0][(i * BD_WIDTH) + j] == 1) {
-				pixel_buffer[buffer_pos + j] = 0xFFFF0000;
-			} else if (BIT_DIGITS[0][(i * BD_WIDTH) + j] == 0) {
+			if (BIT_DIGITS[digit][(i * BD_WIDTH) + j] == 1) {
+				low_res_pixel_buffer[buffer_pos + j] = 0xFFFF0000;
+			} else if (BIT_DIGITS[digit][(i * BD_WIDTH) + j] == 0) {
 				;
 			} else {
 				//TODO: error handling
 			}
 		}
-			buffer_pos += window.surface->w;
+		buffer_pos += low_res_width;
 	}
 }
 
 static void update()
 {
-	for (int i = 0; i < (int)(window.pixels_n/2); i++) {
-		low_res_pixel_buffer[i] = 0xFF0000FF;
+	// draw pixel grid for testing
+	for (int j = 0; j < low_res_height; j += 2) {
+		for (int i = 0; i < low_res_width; i += 2) {
+			low_res_pixel_buffer[(j*low_res_width) + i] = 0xFF0000FF;
+			low_res_pixel_buffer[(j*low_res_width) + i + 1] = 0xFF00FFFF;
+		}
+		for (int i = 0; i < low_res_width; i += 2) {
+			low_res_pixel_buffer[((j+1)*low_res_width) + i] = 0xFF00FFFF;
+			low_res_pixel_buffer[((j+1)*low_res_width) + i + 1] = 0xFF0000FF;
+		}
 	}
-	low_res_pixel_buffer[window.pixels_n-100] = 0xFFFF00FF;
-	//drawNumber(0, 10, 20);
+	// draw white again
+	for (int i = 0; i < window.pixels_n; i++) {
+		low_res_pixel_buffer[i] = 0xFFFFFFFF;
+	}
+	drawNumber(0, 5, 7);
+	drawNumber(1, 11, 7);
+	drawNumber(2, 17, 7);
+	drawNumber(3, 23, 7);
+	drawNumber(4, 29, 7);
 }
 
 static void render()
 {
 	int j = 0;
-	for (int i = 0; i < window.pixels_n; i++) {
-		pixel_buffer[j] = low_res_pixel_buffer[i];
-		pixel_buffer[j + 1] = low_res_pixel_buffer[i];
-		pixel_buffer[j + low_res_width] = low_res_pixel_buffer[i];
-		pixel_buffer[(j + 1) + low_res_width] = low_res_pixel_buffer[i];
-		if ((j + window.scaling_factor) % low_res_width == 0) {
-			j += low_res_width;
+	for (int i = 0; i < (window.pixels_n - 320); i++) {
+		for (int k = 0; k < (window.scaling_factor * window.surface->w); k += window.surface->w) {
+			for (int l = 0; l < window.scaling_factor; l++) {
+				pixel_buffer[j+l+k] = low_res_pixel_buffer[i];
+			}
+		}
+		if ((j + window.scaling_factor) % window.surface->w == 0) {
+			// -1 to calculate for the row the program is on the end of
+			j += (window.surface->w * (window.scaling_factor-1));
+		}
 		j += window.scaling_factor;
 	}
 	SDL_UpdateWindowSurface(window.window);
