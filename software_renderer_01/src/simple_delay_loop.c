@@ -31,11 +31,13 @@ static struct {
 	Uint32 height;
 	SDL_Window *window;
 	SDL_Surface *surface;
+	Uint32 scaling_factor;
 	Uint32 surface_pixels_n;
 	Uint32 pixels_n;
 } window;
 
 static Uint32 *pixel_buffer;
+static Uint32 *low_res_pixel_buffer;
 static SDL_Event event;
 
 static void panicAndAbort(const char *title, const char *text)
@@ -60,9 +62,9 @@ static void dbugPrint()
 
 static void initWindow()
 {
-	window.width = 1280; // /4 = 320
-	window.height = 960; // /4 = 240
-	window.window = SDL_CreateWindow("Window", 640, 480, SDL_WINDOW_METAL);
+	window.width = 1280;
+	window.height = 720;
+	window.window = SDL_CreateWindow("Window", window.width, window.height, SDL_WINDOW_METAL);
 	if (!window.window) {
 		panicAndAbort("Could't create window!", SDL_GetError());
 	}
@@ -72,7 +74,9 @@ static void initWindow()
 		panicAndAbort("Could't fetch surface from window!", SDL_GetError());
 	}
 
-	window.pixels_n = window.width * window.height;
+	// Pixel grid has lower resolution
+	window.scaling_factor = 2;
+	window.pixels_n = (window.width / window.scaling_factor) * (window.height / window.scaling_factor);
 	window.surface_pixels_n = window.surface->w * window.surface->h;
 }
 
