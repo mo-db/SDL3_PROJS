@@ -38,6 +38,8 @@ static struct {
 
 static Uint32 *pixel_buffer;
 static Uint32 *low_res_pixel_buffer;
+static Uint32 low_res_width;
+static Uint32 low_res_height;
 static SDL_Event event;
 
 static void panicAndAbort(const char *title, const char *text)
@@ -77,6 +79,8 @@ static void initWindow()
 	// Pixel grid has lower resolution
 	window.scaling_factor = 2;
 	window.pixels_n = (window.width / window.scaling_factor) * (window.height / window.scaling_factor);
+	low_res_width = (window.width / window.scaling_factor);
+	low_res_height = (window.height / window.scaling_factor);
 	window.surface_pixels_n = window.surface->w * window.surface->h;
 }
 
@@ -101,14 +105,25 @@ static void drawNumber(char digit, Uint32 x_offset, Uint32 y_offset)
 
 static void update()
 {
-	for (int i = 0; i < (int)(window.surface_pixels_n/2); i++) {
-		pixel_buffer[i] = 0xFF0000FF;
+	for (int i = 0; i < (int)(window.pixels_n/2); i++) {
+		low_res_pixel_buffer[i] = 0xFF0000FF;
 	}
-	drawNumber(0, 10, 20);
+	low_res_pixel_buffer[window.pixels_n-100] = 0xFFFF00FF;
+	//drawNumber(0, 10, 20);
 }
 
 static void render()
 {
+	int j = 0;
+	for (int i = 0; i < window.pixels_n; i++) {
+		pixel_buffer[j] = low_res_pixel_buffer[i];
+		pixel_buffer[j + 1] = low_res_pixel_buffer[i];
+		pixel_buffer[j + low_res_width] = low_res_pixel_buffer[i];
+		pixel_buffer[(j + 1) + low_res_width] = low_res_pixel_buffer[i];
+		if ((j + window.scaling_factor) % low_res_width == 0) {
+			j += low_res_width;
+		j += window.scaling_factor;
+	}
 	SDL_UpdateWindowSurface(window.window);
 }
 
@@ -122,6 +137,11 @@ int main()
 	pixel_buffer = (Uint32*)window.surface->pixels;
 	for (int i = 0; i < (int)(window.surface_pixels_n); i++) {
 		pixel_buffer[i] = 0xFFFFFFFF;
+	}
+
+	low_res_pixel_buffer = malloc(window.pixels_n * sizeof(Uint32));
+	for (int i = 0; i < (int)(window.pixels_n); i++) {
+		low_res_pixel_buffer[i] = 0xFFFFFFFF;
 	}
 
 	// main loop
