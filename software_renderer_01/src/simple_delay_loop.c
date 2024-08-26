@@ -162,10 +162,8 @@ int main()
 		low_res_pixel_buffer[i] = 0xFFFFFFFF;
 	}
 
-    // test
-    struct sdl_base *test = initTest(10, 20);
-    printf("width: %u\n", test->width);
-
+    struct scaled_pixelbuf *sp = init_scaled_pixelbuf(2);
+    printf("test: %d\n", sp->width);
 
 	// main loop
 	Uint8 keep_going = 1;

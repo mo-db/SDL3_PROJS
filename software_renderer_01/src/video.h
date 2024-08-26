@@ -3,11 +3,23 @@
 
 #include <SDL3/SDL.h>
 
-struct sdl_base {
+struct window {
 	Uint32 width;
 	Uint32 height;
+	SDL_Window *window;
+	SDL_Surface *surface;
+    Uint32 n_pixels_surface;
 };
 
-struct sdl_base *initTest(Uint32 width, Uint32 height);
+struct scaled_pixelbuf {
+    Uint32 width;
+    Uint32 height;
+    Uint32 n_pixels;
+    Uint8 scaling_factor;
+    Uint32 *buf;
+};
+
+struct window *init_window_and_surface(Uint32 width, Uint32 height);
+struct scaled_pixelbuf *init_scaled_pixelbuf(Uint8 scaling_factor);
 
 #endif
