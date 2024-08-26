@@ -1,9 +1,9 @@
 #include "objects.h"
+#include "video.h"
 #include <sdl3/sdl.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
-
 
 /* TESTING */
 #ifdef TESTING
@@ -161,6 +161,11 @@ int main()
 	for (int i = 0; i < (int)(window.pixels_n); i++) {
 		low_res_pixel_buffer[i] = 0xFFFFFFFF;
 	}
+
+    // test
+    struct sdl_base *test = initTest(10, 20);
+    printf("width: %u\n", test->width);
+
 
 	// main loop
 	Uint8 keep_going = 1;

@@ -1,12 +1,19 @@
 # Makefile needs tab not spaces before recepie command
+CC=clang
 SRC_DIR := src
 OBJ_DIR := obj
 BIN_DIR := bin
 
-CC=clang
+FILES := simple_delay_loop objects
+
+ifneq ($(strip $(FILES)),)
+	SRC := $(addprefix $(SRC_DIR)/, $(addsuffix .c, $(FILES)))
+	OBJ := $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(FILES)))
+else
+	SRC := $(wildcard $(SRC_DIR)/*.c)
+	OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+endif
 EXE := $(BIN_DIR)/a.out
-SRC := $(wildcard $(SRC_DIR)/*.c)
-OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # Libs
 SDL_INCLUDE := $(shell pkg-config --cflags sdl3)
@@ -28,6 +35,7 @@ run: $(EXE)
 # the latter are never checked for out of date
 $(EXE): $(OBJ) | $(SRC_DIR) $(OBJ_DIR) $(BIN_DIR)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+	# on macos -g when in makefile does not create .dsym for debug
 	dsymutil $@
 
 $(SRC_DIR) $(OBJ_DIR) $(BIN_DIR):
