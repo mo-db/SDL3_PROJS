@@ -1,5 +1,5 @@
-#ifndef SDL_BASE_H
-#define SDL_BASE_H
+#ifndef VIDEO_H
+#define VIDEO_H
 
 #include <SDL3/SDL.h>
 

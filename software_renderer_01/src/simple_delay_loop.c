@@ -1,3 +1,4 @@
+#include "debug.h"
 #include "objects.h"
 #include "video.h"
 #include <sdl3/sdl.h>
@@ -164,6 +165,7 @@ int main()
 
     struct scaled_pixelbuf *sp = init_scaled_pixelbuf(2);
     printf("test: %d\n", sp->width);
+    printf("%d\n", MIN(5, 7));
 
 	// main loop
 	Uint8 keep_going = 1;
