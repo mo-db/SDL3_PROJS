@@ -59,7 +59,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR) $(SRC_DIR)
 run: $(EXE)
 	./bin/a.out
 
-# to be able to debug a single file
+# to be able to debug a single file, -E = run preprocessor only
 single:
 	$(CC) $(CFLAGS) -E $(SRC_DIR)/debug.c | tee single.info
 

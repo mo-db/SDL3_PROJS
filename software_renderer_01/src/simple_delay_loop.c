@@ -165,7 +165,14 @@ int main()
 
     struct scaled_pixelbuf *sp = init_scaled_pixelbuf(2);
     printf("test: %d\n", sp->width);
-    printf("%d\n", MIN(5, 7));
+
+	int result = log_init(ERROR_LOGFILE, TRACE_LOGFILE);
+	if (!result) {
+		return 1;
+	}
+
+	PROCESS_ERROR("error test1");
+	LOG_TRACE("trace test1");
 
 	// main loop
 	Uint8 keep_going = 1;
