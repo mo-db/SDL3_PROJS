@@ -1,6 +1,7 @@
 #include "debug.h"
 #include <stdio.h>
 #include <string.h>
+#include <SDL3/SDL.h>
 
 FILE *error_log;
 FILE *trace_log;
@@ -20,17 +21,18 @@ int log_init(const char *error_log_file, const char *trace_log_file)
 	return 1;
 }
 
-void _process_error(char *time, char *file, int line, char *log_message)
+void _process_error(char *time, char *file, int line, char *msg, SDL_Window *window)
 {
-	fprintf(stderr, "[%s] [%s:%d] %s\n", time, file, line, log_message);
-	fprintf(error_log, "[%s] [%s:%d] %s\n", time, file, line, log_message);
+	fprintf(stderr, "[%s] [%s:%d] %s\n", time, file, line, msg);
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, SDL_GetError(), msg, window); // if window exists attach to window
+	fprintf(error_log, "[%s] [%s:%d] %s\n", time, file, line, msg);
 	// file handling functions use syscalls = slow, these functions use a buffer
 	// in the background (set different modes with setbuf())
 	fflush(error_log); // writes all data left in FILE buffer
 }
 
-void _log_trace(char *time, char *file, int line, char *log_message)
+void _log_trace(char *time, char *file, int line, char *msg)
 {
-	fprintf(trace_log, "[%s] [%s:%d] %s\n", time, file, line, log_message);
+	fprintf(trace_log, "[%s] [%s:%d] %s\n", time, file, line, msg);
 	fflush(trace_log); // writes all data left in FILE buffer
 }
