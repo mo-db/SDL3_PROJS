@@ -43,26 +43,6 @@ static Uint32 low_res_width;
 static Uint32 low_res_height;
 static SDL_Event event;
 
-static void panicAndAbort(const char *title, const char *text)
-{/*{{{*/
-	fprintf(stderr, "PANIC: %s ... %s\n", title, text);
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, text, window.window); // if window exists attach to window
-	SDL_Quit(); // It's allways save to call, even if not initialised before!
-	exit(1);
-}/*}}}*/
-
-static void dbugPrint()
-{/*{{{*/
-	printf("\n### DEBUG PRINT ###\n");
-	printf("delta_ns:	%llu\n", state.delta_ns);
-	printf("accu:		%llu\n", state.accum);
-	printf("tick_dur:	%llu\n", TICK_DURATION_NS);
-	state.fps = (1.0 / ((double)state.delta_ns / 1000000000.0));
-	printf("fps:		%.9f\n", state.fps);
-	/* printf("last:		%llu\n", state.last); */
-	/* printf("now:		%llu\n", state.now); */
-}/*}}}*/
-
 static void initWindow()
 {
 	window.width = 1280;
