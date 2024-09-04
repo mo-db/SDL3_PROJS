@@ -15,55 +15,22 @@ static const double TARGET_FPS = 120.0;
 static const Uint64 TICK_DURATION_NS = (1000000000*((1.0/TARGET_FPS)/4.0));
 #endif
 
-static struct {
-	Uint64 accum;		// frametime accumulator
-	Uint64 tick_counter;
-	Uint32 per_frame_ticks;
-	Uint64 now;			// timer count of current frame
-	Uint64 last;		// timer count of last frame
-	Uint64 start;		// debug mesuring
-	Uint64 end;			// debug mesuring
-	Uint64 delta_ns;	// frame duration
-	double fps;
-} state;
+// 320, 640, 960, 1280, 1600, 1920, 2240, 2560
+#define INIT_WIDTH 1280
+#define INIT_HEIGHT 720
+#define SCALING_FACTOR 4
 
-static struct {
-	Uint32 width;
-	Uint32 height;
-	SDL_Window *window;
-	SDL_Surface *surface;
-	Uint32 scaling_factor;
-	Uint32 surface_pixels_n;
-	Uint32 pixels_n;
-} window;
-
-static Uint32 *pixel_buffer;
-static Uint32 *low_res_pixel_buffer;
-static Uint32 low_res_width;
-static Uint32 low_res_height;
-static SDL_Event event;
-
-static void initWindow()
-{
-	window.width = 1280;
-	window.height = 720;
-	window.window = SDL_CreateWindow("Window", window.width, window.height, SDL_WINDOW_METAL);
-	if (!window.window) {
-		panicAndAbort("Could't create window!", SDL_GetError());
-	}
-
-	window.surface = SDL_GetWindowSurface(window.window);
-	if (!window.surface) {
-		panicAndAbort("Could't fetch surface from window!", SDL_GetError());
-	}
-
-	// Pixel grid has lower resolution
-	window.scaling_factor = 2;
-	window.pixels_n = (window.width / window.scaling_factor) * (window.height / window.scaling_factor);
-	low_res_width = (window.width / window.scaling_factor);
-	low_res_height = (window.height / window.scaling_factor);
-	window.surface_pixels_n = window.surface->w * window.surface->h;
-}
+/* static struct { */
+/* 	Uint64 accum;		// frametime accumulator */
+/* 	Uint64 tick_counter; */
+/* 	Uint32 per_frame_ticks; */
+/* 	Uint64 now;			// timer count of current frame */
+/* 	Uint64 last;		// timer count of last frame */
+/* 	Uint64 start;		// debug mesuring */
+/* 	Uint64 end;			// debug mesuring */
+/* 	Uint64 delta_ns;	// frame duration */
+/* 	double fps; */
+/* } state; */
 
 static void drawNumber(char digit, Uint32 x_offset, Uint32 y_offset)
 {
@@ -84,7 +51,7 @@ static void drawNumber(char digit, Uint32 x_offset, Uint32 y_offset)
 	}
 }
 
-static void update()
+static void update(struct scaled_pixelbuf *sp_p)
 {
 	// draw pixel grid for testing
 	for (int j = 0; j < low_res_height; j += 2) {
@@ -97,15 +64,15 @@ static void update()
 			low_res_pixel_buffer[((j+1)*low_res_width) + i + 1] = 0xFF0000FF;
 		}
 	}
+
 	// draw white again
 	for (int i = 0; i < window.pixels_n; i++) {
 		low_res_pixel_buffer[i] = 0xFFFFFFFF;
 	}
-	drawNumber(0, 5, 7);
-	drawNumber(1, 11, 7);
-	drawNumber(2, 17, 7);
-	drawNumber(3, 23, 7);
-	drawNumber(4, 29, 7);
+
+	drawNumber(sp_p, 0, 5, 7);
+	drawNumber(sp_p, 1, 11, 7);
+	drawNumber(sp_p, 2, 17, 7);
 }
 
 static void render()
@@ -128,33 +95,27 @@ static void render()
 
 int main()
 {
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) == -1) {
-		panicAndAbort("SDL_Init error!", SDL_GetError());
-	}
-	initWindow();
-
-	pixel_buffer = (Uint32*)window.surface->pixels;
-	for (int i = 0; i < (int)(window.surface_pixels_n); i++) {
-		pixel_buffer[i] = 0xFFFFFFFF;
-	}
-
-	low_res_pixel_buffer = malloc(window.pixels_n * sizeof(Uint32));
-	for (int i = 0; i < (int)(window.pixels_n); i++) {
-		low_res_pixel_buffer[i] = 0xFFFFFFFF;
-	}
-
-    struct scaled_pixelbuf *sp = init_scaled_pixelbuf(2);
-    printf("test: %d\n", sp->width);
-
-	int result = log_init(ERROR_LOGFILE, TRACE_LOGFILE);
-	if (!result) {
+	if (!log_init(ERROR_LOGFILE, TRACE_LOGFILE)) {
 		return 1;
 	}
 
-	PROCESS_ERROR("error test1");
-	LOG_TRACE("trace test1");
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) == -1) {
+		PROCESS_ERROR("SDL initialization failure!");
+		return 1;
+	}
+
+	struct window *main_window_p = new_window_and_surface(INIT_WIDTH, INIT_HEIGHT);
+	if (!main_window) {
+		return 1;
+	}
+
+	struct scaled_pixelbuf *main_sp_p = new_scaled_pixelbuf_form_window(SCALING_FACTOR, main_window_p);
+	if (!main_sp_p) {
+		return 1;
+	}
 
 	// main loop
+	SDL_Event event;
 	Uint8 keep_going = 1;
 	while (keep_going) {
 		// poll for events 
@@ -168,7 +129,7 @@ int main()
 			}
 		}
 		SDL_DelayNS(1000);
-		update();
+		update(main_sp_p);
 		render(); // FIXME: graceful errhand
 	}
 	SDL_DestroyWindow(window.window);

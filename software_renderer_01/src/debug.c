@@ -21,10 +21,10 @@ int log_init(const char *error_log_file, const char *trace_log_file)
 	return 1;
 }
 
-void _process_error(char *time, char *file, int line, char *msg, SDL_Window *window)
+void _process_error(char *time, char *file, int line, char *msg)
 {
 	fprintf(stderr, "[%s] [%s:%d] %s\n", time, file, line, msg);
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, SDL_GetError(), msg, window); // if window exists attach to window
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, SDL_GetError(), msg, NULL); // if window exists attach to window
 	fprintf(error_log, "[%s] [%s:%d] %s\n", time, file, line, msg);
 	// file handling functions use syscalls = slow, these functions use a buffer
 	// in the background (set different modes with setbuf())
