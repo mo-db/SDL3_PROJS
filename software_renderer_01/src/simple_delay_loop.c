@@ -32,42 +32,42 @@ static const Uint64 TICK_DURATION_NS = (1000000000*((1.0/TARGET_FPS)/4.0));
 /* 	double fps; */
 /* } state; */
 
-static void drawNumber(char digit, Uint32 x_offset, Uint32 y_offset)
+static void drawNumber(struct scaled_pixelbuf *sp_p, char digit, Uint32 x_offset, Uint32 y_offset)
 {
-	Uint32 offset = (y_offset * low_res_width) + x_offset;
+	Uint32 offset = (y_offset * sp_p->width) + x_offset;
 	Uint32 buffer_pos = offset;
 
 	for (int i = 0; i < BD_HEIGHT; i++) {
 		for (int j = 0; j < BD_WIDTH; j++) {
 			if (BIT_DIGITS[digit][(i * BD_WIDTH) + j] == 1) {
-				low_res_pixel_buffer[buffer_pos + j] = 0xFFFF0000;
+				sp_p->buf[buffer_pos + j] = 0xFFFF0000;
 			} else if (BIT_DIGITS[digit][(i * BD_WIDTH) + j] == 0) {
 				;
 			} else {
 				//TODO: error handling
 			}
 		}
-		buffer_pos += low_res_width;
+		buffer_pos += sp_p->width;
 	}
 }
 
 static void update(struct scaled_pixelbuf *sp_p)
 {
 	// draw pixel grid for testing
-	for (int j = 0; j < low_res_height; j += 2) {
-		for (int i = 0; i < low_res_width; i += 2) {
-			low_res_pixel_buffer[(j*low_res_width) + i] = 0xFF0000FF;
-			low_res_pixel_buffer[(j*low_res_width) + i + 1] = 0xFF00FFFF;
+	for (int j = 0; j < sp_p->height; j += 2) {
+		for (int i = 0; i < sp_p->width; i += 2) {
+			sp_p->buf[(j*sp_p->width) + i] = 0xFF0000FF;
+			sp_p->buf[(j*sp_p->width) + i + 1] = 0xFF00FFFF;
 		}
-		for (int i = 0; i < low_res_width; i += 2) {
-			low_res_pixel_buffer[((j+1)*low_res_width) + i] = 0xFF00FFFF;
-			low_res_pixel_buffer[((j+1)*low_res_width) + i + 1] = 0xFF0000FF;
+		for (int i = 0; i < sp_p->width; i += 2) {
+			sp_p->buf[((j+1)*sp_p->width) + i] = 0xFF00FFFF;
+			sp_p->buf[((j+1)*sp_p->width) + i + 1] = 0xFF0000FF;
 		}
 	}
 
 	// draw white again
-	for (int i = 0; i < window.pixels_n; i++) {
-		low_res_pixel_buffer[i] = 0xFFFFFFFF;
+	for (int i = 0; i < sp_p->n_pixels; i++) {
+		sp_p->buf[i] = 0xFFFFFFFF;
 	}
 
 	drawNumber(sp_p, 0, 5, 7);
@@ -75,22 +75,25 @@ static void update(struct scaled_pixelbuf *sp_p)
 	drawNumber(sp_p, 2, 17, 7);
 }
 
-static void render()
+static void render(struct window *window_p, struct scaled_pixelbuf *sp_p)
 {
+	// j = the scaled pixel width, l = how may small pixels in withd
+	// k = how many small pixels in height
 	int j = 0;
-	for (int i = 0; i < (window.pixels_n - 320); i++) {
-		for (int k = 0; k < (window.scaling_factor * window.surface->w); k += window.surface->w) {
-			for (int l = 0; l < window.scaling_factor; l++) {
-				pixel_buffer[j+l+k] = low_res_pixel_buffer[i];
+	// the parantheses with init_width are for testing
+	for (int i = 0; i < (sp_p->n_pixels - (INIT_WIDTH / sp_p->scaling_factor)); i++) {
+		for (int k = 0; k < (sp_p->scaling_factor * window_p->width); k += window_p->width) {
+			for (int l = 0; l < sp_p->scaling_factor; l++) {
+				window_p->buf[j+l+k] = sp_p->buf[i];
 			}
 		}
-		if ((j + window.scaling_factor) % window.surface->w == 0) {
+		if ((j + sp_p->scaling_factor) % window_p->width == 0) {
 			// -1 to calculate for the row the program is on the end of
-			j += (window.surface->w * (window.scaling_factor-1));
+			j += (window_p->width * (sp_p->scaling_factor-1));
 		}
-		j += window.scaling_factor;
+		j += sp_p->scaling_factor;
 	}
-	SDL_UpdateWindowSurface(window.window);
+	SDL_UpdateWindowSurface(window_p->window);
 }
 
 int main()
@@ -98,21 +101,25 @@ int main()
 	if (!log_init(ERROR_LOGFILE, TRACE_LOGFILE)) {
 		return 1;
 	}
+	LOG_TRACE("logging system and error handling initialized");
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) == -1) {
 		PROCESS_ERROR("SDL initialization failure!");
 		return 1;
 	}
+	LOG_TRACE("SDL initialized");
 
 	struct window *main_window_p = new_window_and_surface(INIT_WIDTH, INIT_HEIGHT);
-	if (!main_window) {
+	if (!main_window_p) {
 		return 1;
 	}
+	LOG_TRACE("main_window struct created");
 
 	struct scaled_pixelbuf *main_sp_p = new_scaled_pixelbuf_form_window(SCALING_FACTOR, main_window_p);
 	if (!main_sp_p) {
 		return 1;
 	}
+	LOG_TRACE("Scaled pixel buffer created");
 
 	// main loop
 	SDL_Event event;
@@ -130,9 +137,9 @@ int main()
 		}
 		SDL_DelayNS(1000);
 		update(main_sp_p);
-		render(); // FIXME: graceful errhand
+		render(main_window_p, main_sp_p); // FIXME: graceful errhand
 	}
-	SDL_DestroyWindow(window.window);
+	//SDL_DestroyWindow(window.window);
 	SDL_Quit();
 	return 0;
 }

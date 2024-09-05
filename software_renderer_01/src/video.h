@@ -8,7 +8,8 @@ struct window {
 	Uint32 height;
 	SDL_Window *window;
 	SDL_Surface *surface;
-    Uint32 n_pixels_surface;
+	Uint32 *buf;
+    Uint32 n_pixels;
 };
 
 struct scaled_pixelbuf {
