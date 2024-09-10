@@ -1,6 +1,7 @@
 #include "debug.h"
 #include "objects.h"
 #include "video.h"
+#include "graphics.h"
 #include <sdl3/sdl.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -75,27 +76,6 @@ static void update(struct scaled_pixelbuf *sp_p)
 	drawNumber(sp_p, 2, 17, 7);
 }
 
-static void render(struct window *window_p, struct scaled_pixelbuf *sp_p)
-{
-	// j = the scaled pixel width, l = how may small pixels in withd
-	// k = how many small pixels in height
-	int j = 0;
-	// the parantheses with init_width are for testing
-	for (int i = 0; i < (sp_p->n_pixels - (INIT_WIDTH / sp_p->scaling_factor)); i++) {
-		for (int k = 0; k < (sp_p->scaling_factor * window_p->width); k += window_p->width) {
-			for (int l = 0; l < sp_p->scaling_factor; l++) {
-				window_p->buf[j+l+k] = sp_p->buf[i];
-			}
-		}
-		if ((j + sp_p->scaling_factor) % window_p->width == 0) {
-			// -1 to calculate for the row the program is on the end of
-			j += (window_p->width * (sp_p->scaling_factor-1));
-		}
-		j += sp_p->scaling_factor;
-	}
-	SDL_UpdateWindowSurface(window_p->window);
-}
-
 int main()
 {
 	if (!log_init(ERROR_LOGFILE, TRACE_LOGFILE)) {
@@ -137,7 +117,9 @@ int main()
 		}
 		SDL_DelayNS(1000);
 		update(main_sp_p);
-		render(main_window_p, main_sp_p); // FIXME: graceful errhand
+		if (!render(main_window_p, main_sp_p)) {
+			return 1;
+		}
 	}
 	//SDL_DestroyWindow(window.window);
 	SDL_Quit();

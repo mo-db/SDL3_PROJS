@@ -64,3 +64,25 @@ struct scaled_pixelbuf *new_scaled_pixelbuf_form_window(Uint8 scaling_factor,
 	}
     return scaled_pixelbuf_p;
 }
+
+int render(struct window *window_p, struct scaled_pixelbuf *sp_p)
+{
+	// j = the scaled pixel width, l = how may small pixels in withd
+	// k = how many small pixels in height
+	int j = 0;
+	// the parantheses with init_width are for testing
+	for (int i = 0; i < sp_p->n_pixels; i++) {
+		for (int k = 0; k < (sp_p->scaling_factor * window_p->width); k += window_p->width) {
+			for (int l = 0; l < sp_p->scaling_factor; l++) {
+				window_p->buf[j+l+k] = sp_p->buf[i];
+			}
+		}
+		if ((j + sp_p->scaling_factor) % window_p->width == 0) {
+			// -1 to calculate for the row the program is on the end of
+			j += (window_p->width * (sp_p->scaling_factor-1));
+		}
+		j += sp_p->scaling_factor;
+	}
+	SDL_UpdateWindowSurface(window_p->window);
+	return 1;
+}
