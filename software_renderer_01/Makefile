@@ -2,7 +2,7 @@
 
 ### CONFIG
 # specify source files: if no specified -> fetches all source files
-FILES := simple_delay_loop objects video debug
+FILES := simple_delay_loop objects video debug logic state
 
 # Makefile needs tab not spaces before recepie command
 SRC_DIR := src

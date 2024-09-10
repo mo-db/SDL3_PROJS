@@ -2,6 +2,8 @@
 #include "objects.h"
 #include "video.h"
 #include "graphics.h"
+#include "state.h"
+#include "logic.h"
 #include <sdl3/sdl.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -20,61 +22,6 @@ static const Uint64 TICK_DURATION_NS = (1000000000*((1.0/TARGET_FPS)/4.0));
 #define INIT_WIDTH 1280
 #define INIT_HEIGHT 720
 #define SCALING_FACTOR 4
-
-/* static struct { */
-/* 	Uint64 accum;		// frametime accumulator */
-/* 	Uint64 tick_counter; */
-/* 	Uint32 per_frame_ticks; */
-/* 	Uint64 now;			// timer count of current frame */
-/* 	Uint64 last;		// timer count of last frame */
-/* 	Uint64 start;		// debug mesuring */
-/* 	Uint64 end;			// debug mesuring */
-/* 	Uint64 delta_ns;	// frame duration */
-/* 	double fps; */
-/* } state; */
-
-static void drawNumber(struct scaled_pixelbuf *sp_p, char digit, Uint32 x_offset, Uint32 y_offset)
-{
-	Uint32 offset = (y_offset * sp_p->width) + x_offset;
-	Uint32 buffer_pos = offset;
-
-	for (int i = 0; i < BD_HEIGHT; i++) {
-		for (int j = 0; j < BD_WIDTH; j++) {
-			if (BIT_DIGITS[digit][(i * BD_WIDTH) + j] == 1) {
-				sp_p->buf[buffer_pos + j] = 0xFFFF0000;
-			} else if (BIT_DIGITS[digit][(i * BD_WIDTH) + j] == 0) {
-				;
-			} else {
-				//TODO: error handling
-			}
-		}
-		buffer_pos += sp_p->width;
-	}
-}
-
-static void update(struct scaled_pixelbuf *sp_p)
-{
-	// draw pixel grid for testing
-	for (int j = 0; j < sp_p->height; j += 2) {
-		for (int i = 0; i < sp_p->width; i += 2) {
-			sp_p->buf[(j*sp_p->width) + i] = 0xFF0000FF;
-			sp_p->buf[(j*sp_p->width) + i + 1] = 0xFF00FFFF;
-		}
-		for (int i = 0; i < sp_p->width; i += 2) {
-			sp_p->buf[((j+1)*sp_p->width) + i] = 0xFF00FFFF;
-			sp_p->buf[((j+1)*sp_p->width) + i + 1] = 0xFF0000FF;
-		}
-	}
-
-	// draw white again
-	for (int i = 0; i < sp_p->n_pixels; i++) {
-		sp_p->buf[i] = 0xFFFFFFFF;
-	}
-
-	drawNumber(sp_p, 0, 5, 7);
-	drawNumber(sp_p, 1, 11, 7);
-	drawNumber(sp_p, 2, 17, 7);
-}
 
 int main()
 {
