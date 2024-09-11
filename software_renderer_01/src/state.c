@@ -3,6 +3,7 @@
 #include "logic.h"
 #include "debug.h"
 #include "video.h"
+#include <stdlib.h>
 
 int update(struct scaled_pixelbuf *sp_p)
 {
@@ -23,8 +24,8 @@ int update(struct scaled_pixelbuf *sp_p)
 		sp_p->buf[i] = 0xFFFFFFFF;
 	}
 
-	drawNumber(sp_p, 0, 5, 7);
-	drawNumber(sp_p, 1, 11, 7);
-	drawNumber(sp_p, 2, 17, 7);
+	//TODO: error handling for draw number
+	draw_number(sp_p, 1234, 5, 7);
+
 	return 1;
 }
