@@ -30,7 +30,6 @@ static int *calculate_bit_digits(int number)
 			PROCESS_ERROR("would be out of bounds, crashing here");
 			return NULL;
 		}
-		printf("number: %d\n", number);
 		digits[i] = number / (int)pow(10, (n_digits - (i)));
 		number = number % (digits[i] * (int)pow(10, (n_digits - (i))));
 	}

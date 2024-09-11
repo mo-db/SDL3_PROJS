@@ -25,7 +25,8 @@ int update(struct scaled_pixelbuf *sp_p)
 	}
 
 	//TODO: error handling for draw number
-	draw_number(sp_p, 1234, 5, 7);
+	int tut = rand();
+	draw_number(sp_p, tut, 5, 7);
 
 	return 1;
 }

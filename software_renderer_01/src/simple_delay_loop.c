@@ -62,7 +62,8 @@ int main()
 				}
 			}
 		}
-		SDL_DelayNS(1000);
+		/* SDL_DelayNS(1000); */
+		SDL_Delay(100);
 		update(main_sp_p);
 		if (!render(main_window_p, main_sp_p)) {
 			return 1;
