@@ -3,6 +3,7 @@
 #include "logic.h"
 #include "debug.h"
 #include "video.h"
+#include "objects.h"
 #include <stdlib.h>
 
 int update(struct scaled_pixelbuf *sp_p)
@@ -24,9 +25,20 @@ int update(struct scaled_pixelbuf *sp_p)
 		sp_p->buf[i] = 0xFFFFFFFF;
 	}
 
+	// INFO: this is just for testing and trying out the renderer,
 	//TODO: error handling for draw number
-	int tut = rand();
-	draw_number(sp_p, tut, 5, 7);
+	//int tut = rand();
+	//draw_number(sp_p, tut, 5, 7);
+	
+	// could write simple function create_point() or have other easy assign
+	struct point p1;
+	p1.x = 2;
+	p1.y = 1;
+	struct point p2;
+	p2.x = 5 * 4;
+	p2.y = 4 * 4;
+
+	draw_line_simple(sp_p, p1, p2);
 
 	return 1;
 }

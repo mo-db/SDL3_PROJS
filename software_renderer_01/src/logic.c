@@ -71,4 +71,25 @@ int draw_number(struct scaled_pixelbuf *sp_p, int number, Uint32 x_offset, Uint3
 	return 1;
 }
 
+int draw_line_simple(struct scaled_pixelbuf *sp_p, struct point p1, struct point p2)
+{
+	int dx = p2.x - p1.x;
+	int dy = p2.y - p1.y;
+	int m = dy/dx;
+	int x, y;
+	int plot_value;
 
+	// INFO: I will have to flip the pixelbuffer or better cast it into the form of a math grid
+	for (x = p1.x; x <= p2.x; x++) {
+		y = m * (x - p1.x) + p1.y;
+		plot_value = (x - 1) + ((sp_p->height - y) * sp_p->width);
+
+		if (plot_value > sp_p->n_pixels) {
+			PROCESS_ERROR("buffer overflow drawing line!");
+			return 0;
+		} else {
+			sp_p->buf[plot_value] = 0xFFFF0000;
+		}
+	}
+	return 1;
+}
