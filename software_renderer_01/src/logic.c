@@ -73,9 +73,9 @@ int draw_number(struct scaled_pixelbuf *sp_p, int number, Uint32 x_offset, Uint3
 
 int draw_line_simple(struct scaled_pixelbuf *sp_p, struct point p1, struct point p2)
 {
-	int dx = p2.x - p1.x;
-	int dy = p2.y - p1.y;
-	int m = dy/dx;
+	float dx = p2.x - p1.x;
+	float dy = p2.y - p1.y;
+	float m = dy/dx;
 	int x, y;
 	int plot_value;
 

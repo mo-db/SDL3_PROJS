@@ -35,8 +35,15 @@ int update(struct scaled_pixelbuf *sp_p)
 	p1.x = 2;
 	p1.y = 1;
 	struct point p2;
-	p2.x = 5 * 4;
-	p2.y = 4 * 4;
+	p2.x = 100;
+	p2.y = 30;
+
+	/* static int testvar = 2; */
+	/* p2.x = testvar++; */
+	/**/
+	/* if (testvar >= 20) { */
+	/* 	testvar = p1.x; */
+	/* } */
 
 	draw_line_simple(sp_p, p1, p2);
 
