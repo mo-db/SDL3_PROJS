@@ -32,11 +32,11 @@ int update(struct scaled_pixelbuf *sp_p)
 	
 	// could write simple function create_point() or have other easy assign
 	struct point p1;
-	p1.x = 2;
+	p1.x = 1;
 	p1.y = 1;
 	struct point p2;
-	p2.x = 100;
-	p2.y = 30;
+	p2.x = sp_p->width;
+	p2.y = pixel_counter;
 
 	/* static int testvar = 2; */
 	/* p2.x = testvar++; */

@@ -17,5 +17,6 @@
 /* } state; */
 
 int update(struct scaled_pixelbuf *sp_p);
+int pixel_counter;
 
 #endif

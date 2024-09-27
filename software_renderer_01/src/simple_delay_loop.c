@@ -36,6 +36,10 @@ int main()
 	}
 	LOG_TRACE("SDL initialized");
 
+	//TODO: need something like other_init() or maybe state init? init for each import?
+	// maybe have a struct with the state and give that struct to the update etc functions - so it's easier on the eyes and better maybe!
+	pixel_counter = 1;
+
 	struct window *main_window_p = new_window_and_surface(INIT_WIDTH, INIT_HEIGHT);
 	if (!main_window_p) {
 		return 1;
@@ -63,7 +67,14 @@ int main()
 			}
 		}
 		/* SDL_DelayNS(1000); */
-		SDL_Delay(100);
+		//TODO: Refactor later
+		SDL_Delay(10);
+		if (pixel_counter == main_sp_p->height) {
+			pixel_counter = 1;
+		} else {
+			pixel_counter++;
+		}
+
 		update(main_sp_p);
 		if (!render(main_window_p, main_sp_p)) {
 			return 1;

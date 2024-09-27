@@ -79,10 +79,14 @@ int draw_line_simple(struct scaled_pixelbuf *sp_p, struct point p1, struct point
 	int x, y;
 	int plot_value;
 
-	// INFO: I will have to flip the pixelbuffer or better cast it into the form of a math grid
+	// INFO: I will have to flip the pixelbuffer or better cast it into the form of a math coordsys
 	for (x = p1.x; x <= p2.x; x++) {
 		y = m * (x - p1.x) + p1.y;
 		plot_value = (x - 1) + ((sp_p->height - y) * sp_p->width);
+
+		printf("plot_value: %d\n", plot_value);
+		//TODO: How do i do that???
+		//LOG_TRACE("plot_value: %d", 1);
 
 		if (plot_value > sp_p->n_pixels) {
 			PROCESS_ERROR("buffer overflow drawing line!");
