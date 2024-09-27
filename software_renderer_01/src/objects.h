@@ -24,4 +24,7 @@ struct line {
 	struct point p2;
 };
 
+int vec_2[2];
+int vec_3[3];
+
 #endif
